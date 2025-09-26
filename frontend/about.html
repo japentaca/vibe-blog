@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acerca de - Editorial Blog</title>
+    <meta name="description" content="Conoce nuestra plataforma de blog minimalista diseñada para creadores reflexivos y contenido significativo.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Suisse+Intl:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Canela:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.min.js"></script>
+    
+    <style>
+        :root {
+            --charcoal: #2C2C2C;
+            --warm-white: #FEFEFE;
+            --sage-green: #8B9A7A;
+            --soft-gray: #F8F8F8;
+            --muted-gold: #D4B896;
+            --cream: #FDFCF8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--charcoal);
+            background-color: var(--warm-white);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(254, 254, 254, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(139, 154, 122, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Canela', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: var(--sage-green);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--charcoal);
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--sage-green);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--sage-green);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--warm-white) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('resources/hero-writing.jpg') center/cover;
+            opacity: 0.05;
+            z-index: 0;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: 'Canela', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--sage-green);
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .about-section {
+            margin-bottom: 4rem;
+        }
+
+        .about-section h2 {
+            font-family: 'Canela', serif;
+            font-size: 2rem;
+            color: var(--charcoal);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        .about-section h3 {
+            font-family: 'Canela', serif;
+            font-size: 1.5rem;
+            color: var(--charcoal);
+            margin: 2rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        .about-section p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--charcoal);
+            opacity: 0.9;
+        }
+
+        .about-section ul {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+        }
+
+        .about-section li {
+            margin-bottom: 0.75rem;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--charcoal);
+            opacity: 0.9;
+        }
+
+        .about-section li strong {
+            color: var(--sage-green);
+            font-weight: 600;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: var(--warm-white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(44, 44, 44, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-family: 'Canela', serif;
+            font-size: 1.25rem;
+            color: var(--charcoal);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--charcoal);
+            opacity: 0.7;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--soft-gray);
+            padding: 4rem 2rem;
+            text-align: center;
+            margin: 4rem 0;
+            border-radius: 12px;
+        }
+
+        .cta-section h2 {
+            font-family: 'Canela', serif;
+            font-size: 2rem;
+            color: var(--charcoal);
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            color: var(--charcoal);
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--sage-green);
+            color: var(--warm-white);
+        }
+
+        .btn-primary:hover {
+            background: var(--muted-gold);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--sage-green);
+            border: 2px solid var(--sage-green);
+        }
+
+        .btn-secondary:hover {
+            background: var(--sage-green);
+            color: var(--warm-white);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--charcoal);
+            color: var(--warm-white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer p {
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .hero {
+                padding: 6rem 1rem 3rem;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .cta-section {
+                padding: 3rem 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stagger {
+            animation-delay: calc(0.1s * var(--delay));
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Editorial</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="about.html" class="active">Acerca de</a></li>
+                <li><a href="editor.html">Editor</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Acerca de Editorial</h1>
+            <p class="hero-subtitle">Una plataforma minimalista para creadores reflexivos</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Introduction -->
+        <section class="about-section fade-in stagger" style="--delay: 1">
+            <h2>Nuestra Historia</h2>
+            <p>
+                Editorial nació de una creencia simple: que el gran contenido merece una gran plataforma. 
+                En un mundo abrumado por interfaces desordenadas y anuncios que distraen, nos propusimos 
+                crear un espacio donde las palabras pudieran realmente brillar.
+            </p>
+            <p>
+                Nuestro viaje comenzó con una pregunta: ¿Qué pasaría si elimináramos todo lo 
+                innecesario y nos enfocáramos puramente en la experiencia de lectura y escritura? El resultado es una 
+                plataforma que combina diseño elegante con funcionalidad poderosa, creando un ambiente 
+                donde la creatividad puede florecer.
+            </p>
+        </section>
+
+        <!-- Mission -->
+        <section class="about-section fade-in stagger" style="--delay: 2">
+            <h2>Nuestra Misión</h2>
+            <p>
+                Creemos que la escritura reflexiva tiene el poder de inspirar, educar y transformar. 
+                Nuestra misión es proporcionar a los creadores las herramientas que necesitan para compartir sus ideas con 
+                el mundo, sin las barreras técnicas que a menudo se interponen en el camino.
+            </p>
+            <p>
+                Ya seas un escritor experimentado, un blogger en ciernes, o alguien con una historia que contar, 
+                Editorial proporciona el lienzo perfecto para tus pensamientos. Nosotros manejamos los detalles técnicos 
+                para que puedas enfocarte en lo que más importa: crear contenido significativo.
+            </p>
+        </section>
+
+        <!-- Features -->
+        <section class="about-section fade-in stagger" style="--delay: 3">
+            <h2>Lo Que Nos Hace Diferentes</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Diseño Hermoso</h3>
+                    <p>
+                        Estética limpia y minimalista que pone tu contenido primero. 
+                        Cada elemento está cuidadosamente diseñado para mejorar la experiencia de lectura.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✍️</div>
+                    <h3>Editor de Texto Enriquecido</h3>
+                    <p>
+                        Un editor poderoso pero intuitivo que hace el formato sin esfuerzo. 
+                        Crea publicaciones hermosas sin ningún conocimiento técnico.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Diseño Responsivo</h3>
+                    <p>
+                        Tu contenido se ve perfecto en cada dispositivo, desde escritorio hasta móvil. 
+                        Los lectores pueden disfrutar tu trabajo en cualquier lugar, en cualquier momento.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Rendimiento Rápido</h3>
+                    <p>
+                        Optimizado para velocidad y SEO, asegurando que tu contenido llegue 
+                        a tu audiencia rápida y efectivamente.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Privacidad Primero</h3>
+                    <p>
+                        Sin rastreo, sin anuncios, sin recolección de datos. Tu contenido y 
+                        la privacidad de tus lectores están siempre protegidos.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Publicación Fácil</h3>
+                    <p>
+                        Proceso de publicación simple y directo. Escribe, previsualiza, 
+                        y publica con solo unos pocos clics.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Values -->
+        <section class="about-section fade-in stagger" style="--delay: 4">
+            <h2>Nuestros Valores</h2>
+            <h3>Simplicidad</h3>
+            <p>
+                Creemos que las mejores herramientas son aquellas en las que no tienes que pensar. 
+                Nuestra plataforma está diseñada para ser intuitiva y libre de distracciones, permitiéndote 
+                enfocarte completamente en tu proceso creativo.
+            </p>
+            
+            <h3>Calidad</h3>
+            <p>
+                Cada característica que construimos, cada decisión de diseño que tomamos, está impulsada por nuestro 
+                compromiso con la calidad. Creemos que la atención al detalle importa, y 
+                se muestra en cada aspecto de nuestra plataforma.
+            </p>
+            
+            <h3>Accesibilidad</h3>
+            <p>
+                Las grandes ideas pueden venir de cualquier lugar, y merecen ser escuchadas. Nuestra 
+                plataforma está diseñada para ser accesible a creadores de todos los orígenes y 
+                niveles de habilidad técnica.
+            </p>
+            
+            <h3>Comunidad</h3>
+            <p>
+                Creemos en el poder de la comunidad y la importancia de compartir ideas. 
+                Nuestra plataforma está construida para fomentar la conexión y conversación alrededor de los 
+                temas que más importan.
+            </p>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="cta-section fade-in stagger" style="--delay: 5">
+            <h2>¿Listo para Comenzar a Escribir?</h2>
+            <p>
+                Únete a nuestra comunidad de creadores reflexivos y comienza a compartir tus ideas 
+                con el mundo. Ya sea que estés escribiendo tu primera publicación o la centésima, 
+                Editorial proporciona la plataforma perfecta para tu voz.
+            </p>
+            <div class="cta-buttons">
+                <a href="editor.html" class="btn btn-primary">📝 Comenzar a Escribir</a>
+                <a href="index.html" class="btn btn-secondary">📖 Leer Historias</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Editorial Blog. Creado con cuidado para creadores reflexivos.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate elements on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all sections
+            const sections = document.querySelectorAll('.about-section, .cta-section');
+            sections.forEach(section => observer.observe(section));
+
+            // Animate feature cards
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach((card, index) => {
+                card.style.setProperty('--delay', index + 1);
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

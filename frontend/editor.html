@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Blog - Editorial Blog</title>
+    <meta name="description" content="Crea y edita publicaciones de blog con nuestro editor de texto enriquecido.">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Suisse+Intl:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Canela:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Quill Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <style>
+        :root {
+            --charcoal: #2C2C2C;
+            --warm-white: #FEFEFE;
+            --sage-green: #8B9A7A;
+            --soft-gray: #F8F8F8;
+            --muted-gold: #D4B896;
+            --cream: #FDFCF8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--charcoal);
+            background-color: var(--warm-white);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(254, 254, 254, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(139, 154, 122, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Canela', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: var(--sage-green);
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .save-status {
+            color: var(--sage-green);
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .save-status.visible {
+            opacity: 1;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-right: 1rem;
+        }
+
+        .user-name {
+            color: var(--sage-green);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary {
+            background: var(--soft-gray);
+            color: var(--charcoal);
+        }
+
+        .btn-secondary:hover {
+            background: var(--muted-gold);
+            color: var(--warm-white);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--sage-green);
+            color: var(--warm-white);
+        }
+
+        .btn-primary:hover {
+            background: var(--muted-gold);
+            transform: translateY(-2px);
+        }
+
+        /* Editor Container */
+        .editor-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Main Editor */
+        .editor-main {
+            background: var(--warm-white);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(44, 44, 44, 0.08);
+            overflow: hidden;
+        }
+
+        .editor-header {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid var(--soft-gray);
+        }
+
+        .title-input {
+            width: 100%;
+            border: none;
+            font-family: 'Canela', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            outline: none;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .title-input::placeholder {
+            color: rgba(44, 44, 44, 0.4);
+        }
+
+        .editor-toolbar {
+            border-bottom: 1px solid var(--soft-gray);
+            padding: 1rem 2rem;
+        }
+
+        .editor-content {
+            min-height: 500px;
+        }
+
+        .ql-editor {
+            padding: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--charcoal);
+        }
+
+        .ql-editor h1 {
+            font-family: 'Canela', serif;
+            font-size: 2rem;
+            margin: 2rem 0 1rem;
+            color: var(--charcoal);
+        }
+
+        .ql-editor h2 {
+            font-family: 'Canela', serif;
+            font-size: 1.75rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--charcoal);
+        }
+
+        .ql-editor h3 {
+            font-family: 'Canela', serif;
+            font-size: 1.5rem;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--charcoal);
+        }
+
+        .ql-editor p {
+            margin-bottom: 1.5rem;
+        }
+
+        .ql-editor blockquote {
+            border-left: 4px solid var(--sage-green);
+            padding: 1rem 2rem;
+            margin: 1.5rem 0;
+            background: var(--soft-gray);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        /* Sidebar */
+        .editor-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .sidebar-section {
+            background: var(--warm-white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(44, 44, 44, 0.08);
+        }
+
+        .sidebar-section h3 {
+            font-family: 'Canela', serif;
+            font-size: 1.25rem;
+            color: var(--charcoal);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--charcoal);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--soft-gray);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+            background: var(--warm-white);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--sage-green);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Image Upload */
+        .image-upload {
+            position: relative;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--sage-green);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            background: var(--soft-gray);
+        }
+
+        .upload-area.dragover {
+            background: rgba(139, 154, 122, 0.1);
+            border-color: var(--muted-gold);
+        }
+
+        .upload-input {
+            display: none;
+        }
+
+        .upload-preview {
+            margin-top: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-preview img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        /* Character Count */
+        .character-count {
+            font-size: 0.8rem;
+            color: var(--sage-green);
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-draft {
+            background: rgba(139, 154, 122, 0.1);
+            color: var(--sage-green);
+        }
+
+        .status-published {
+            background: rgba(212, 185, 150, 0.2);
+            color: var(--muted-gold);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .editor-sidebar {
+                order: -1;
+            }
+
+            .sidebar-section {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .editor-container {
+                padding: 5rem 1rem 1rem;
+            }
+
+            .title-input {
+                font-size: 2rem;
+            }
+
+            .editor-header,
+            .ql-editor {
+                padding: 1.5rem;
+            }
+
+            .editor-actions {
+                gap: 0.5rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            background: var(--sage-green);
+            color: var(--warm-white);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(44, 44, 44, 0.15);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.success {
+            background: var(--sage-green);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Editorial</a>
+            <div class="editor-actions">
+                <span class="save-status" id="saveStatus"></span>
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <span class="user-name" id="userName"></span>
+                    <button class="btn btn-secondary" onclick="logout()">🚪 Cerrar Sesión</button>
+                </div>
+                <button class="btn btn-secondary" onclick="previewPost()">👁️ Vista Previa</button>
+                <button class="btn btn-secondary" onclick="savePost()">💾 Guardar Borrador</button>
+                <button class="btn btn-primary" onclick="publishPost()">📤 Publicar</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Editor Container -->
+    <div class="editor-container">
+        <!-- Main Editor -->
+        <div class="editor-main fade-in">
+            <div class="editor-header">
+                <input type="text" class="title-input" id="postTitle" placeholder="Ingresa el título de tu publicación...">
+            </div>
+            <div class="editor-toolbar">
+                <div id="editorToolbar">
+                    <!-- Quill toolbar will be inserted here -->
+                </div>
+            </div>
+            <div class="editor-content">
+                <div id="editorContent">
+                    <!-- Quill editor will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="editor-sidebar fade-in">
+            <!-- Post Settings -->
+            <div class="sidebar-section">
+                <h3>Configuración de Publicación</h3>
+
+                <div class="form-group">
+                    <label class="form-label">Categoría</label>
+                    <select class="form-select" id="postCategory">
+                        <option value="">Seleccionar categoría</option>
+                        <option value="Design">Diseño</option>
+                        <option value="Technology">Tecnología</option>
+                        <option value="Writing">Escritura</option>
+                        <option value="Platform">Plataforma</option>
+                        <option value="Tutorial">Tutorial</option>
+                        <option value="Opinion">Opinión</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Etiquetas</label>
+                    <input type="text" class="form-input" id="postTags" placeholder="diseño, inspiración, consejos">
+                    <small style="color: var(--sage-green); font-size: 0.8rem;">Separa las etiquetas con comas</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Extracto</label>
+                    <textarea class="form-textarea" id="postExcerpt"
+                        placeholder="Escribe un breve resumen de tu publicación..."></textarea>
+                    <div class="character-count" id="excerptCount">0/300</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Estado</label>
+                    <div class="status-indicator status-draft" id="postStatus">
+                        <span>📝</span> Borrador
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Image -->
+            <div class="sidebar-section">
+                <h3>Imagen Destacada</h3>
+                <div class="image-upload">
+                    <div class="upload-area" id="uploadArea">
+                        <div>📸</div>
+                        <p>Haz clic para subir o arrastra y suelta</p>
+                        <small>PNG, JPG hasta 5MB</small>
+                    </div>
+                    <input type="file" class="upload-input" id="imageInput" accept="image/*">
+                    <div class="upload-preview" id="uploadPreview">
+                        <img id="previewImage" alt="Vista previa">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Stats -->
+            <div class="sidebar-section">
+                <h3>Estadísticas de Publicación</h3>
+                <div class="form-group">
+                    <label class="form-label">Conteo de Palabras</label>
+                    <div id="wordCount" style="font-size: 1.25rem; font-weight: 600; color: var(--sage-green);">0</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tiempo de Lectura</label>
+                    <div id="readingTime" style="font-size: 1.25rem; font-weight: 600; color: var(--sage-green);">0 min
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script src="main.js"></script>
+    <script>
+        let quill = null;
+        let currentPost = null;
+        let autoSaveTimer = null;
+        let featuredImagePath = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            checkAuthentication();
+        });
+
+        function initializeEditor() {
+            // Initialize Quill editor
+            quill = new Quill('#editorContent', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'indent': '-1' }, { 'indent': '+1' }],
+                        ['link', 'image'],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'Comienza a escribir tu historia...'
+            });
+
+            // Setup auto-save
+            quill.on('text-change', function () {
+                updateStats();
+                scheduleAutoSave();
+            });
+        }
+
+        function setupEventListeners() {
+            // Title input
+            document.getElementById('postTitle').addEventListener('input', function () {
+                scheduleAutoSave();
+            });
+
+            // Category select
+            document.getElementById('postCategory').addEventListener('change', function () {
+                scheduleAutoSave();
+            });
+
+            // Tags input
+            document.getElementById('postTags').addEventListener('input', function () {
+                scheduleAutoSave();
+            });
+
+            // Excerpt textarea
+            document.getElementById('postExcerpt').addEventListener('input', function () {
+                updateExcerptCount();
+                scheduleAutoSave();
+            });
+
+            // Image upload
+            setupImageUpload();
+        }
+
+        function setupImageUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const imageInput = document.getElementById('imageInput');
+
+            uploadArea.addEventListener('click', () => imageInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleImageUpload(files[0]);
+                }
+            });
+
+            imageInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleImageUpload(e.target.files[0]);
+                }
+            });
+        }
+
+        async function handleImageUpload(file) {
+            if (!file.type.startsWith('image/')) {
+                showNotification('Por favor selecciona un archivo de imagen', 'error');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('El tamaño de la imagen debe ser menor a 5MB', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    featuredImagePath = result.data.path;
+                    showPreviewImage(result.data.path);
+                    scheduleAutoSave();
+                    showNotification('Imagen subida exitosamente', 'success');
+                } else {
+                    showNotification('Error al subir la imagen', 'error');
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                showNotification('Error al subir la imagen', 'error');
+            }
+        }
+
+        function showPreviewImage(imagePath) {
+            const preview = document.getElementById('uploadPreview');
+            const image = document.getElementById('previewImage');
+
+            image.src = imagePath;
+            preview.style.display = 'block';
+        }
+
+        function updateStats() {
+            const text = quill.getText();
+            const wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+            const readingTime = Math.ceil(wordCount / 200);
+
+            document.getElementById('wordCount').textContent = wordCount;
+            document.getElementById('readingTime').textContent = `${readingTime} min`;
+        }
+
+        function updateExcerptCount() {
+            const excerpt = document.getElementById('postExcerpt').value;
+            const count = excerpt.length;
+            document.getElementById('excerptCount').textContent = `${count}/300`;
+        }
+
+        function scheduleAutoSave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                savePost(true);
+            }, 3000);
+        }
+
+        async function savePost(isAutoSave = false) {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = quill.root.innerHTML;
+            const category = document.getElementById('postCategory').value;
+            const tags = document.getElementById('postTags').value;
+            const excerpt = document.getElementById('postExcerpt').value;
+
+            if (!title || !content) {
+                if (!isAutoSave) {
+                    showNotification('El título y el contenido son obligatorios', 'error');
+                }
+                return;
+            }
+
+            const postData = {
+                title,
+                content,
+                category,
+                tags,
+                excerpt,
+                featured_image: featuredImagePath,
+                status: 'draft'
+            };
+
+            try {
+                const url = currentPost ? `/api/posts/${currentPost.id}` : '/api/posts';
+                const method = currentPost ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(postData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    if (!currentPost) {
+                        currentPost = result.data;
+                    }
+
+                    if (isAutoSave) {
+                        showSaveStatus('Borrador guardado');
+                    } else {
+                        showNotification('Publicación guardada exitosamente', 'success');
+                    }
+
+                    updatePostStatus('draft');
+                } else {
+                    showNotification('Error al guardar la publicación', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving post:', error);
+                showNotification('Error al guardar la publicación', 'error');
+            }
+        }
+
+        async function publishPost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = quill.root.innerHTML;
+
+            if (!title || !content) {
+                showNotification('El título y el contenido son obligatorios', 'error');
+                return;
+            }
+
+            const postData = {
+                title,
+                content,
+                category: document.getElementById('postCategory').value,
+                tags: document.getElementById('postTags').value,
+                excerpt: document.getElementById('postExcerpt').value,
+                featured_image: featuredImagePath,
+                status: 'published'
+            };
+
+            try {
+                const url = currentPost ? `/api/posts/${currentPost.id}` : '/api/posts';
+                const method = currentPost ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(postData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('¡Publicación publicada exitosamente!', 'success');
+                    updatePostStatus('published');
+
+                    // Redirect to view the published post
+                    setTimeout(() => {
+                        window.location.href = `post.html?slug=${result.data.slug}`;
+                    }, 2000);
+                } else {
+                    showNotification('Error al publicar la entrada', 'error');
+                }
+            } catch (error) {
+                console.error('Error publishing post:', error);
+                showNotification('Error al publicar la entrada', 'error');
+            }
+        }
+
+        function previewPost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = quill.root.innerHTML;
+            const excerpt = document.getElementById('postExcerpt').value;
+
+            if (!title || !content) {
+                showNotification('El título y el contenido son obligatorios para la vista previa', 'error');
+                return;
+            }
+
+            // Store preview data in localStorage
+            const previewData = {
+                title,
+                content,
+                category: document.getElementById('postCategory').value,
+                tags: document.getElementById('postTags').value,
+                excerpt,
+                featured_image: featuredImagePath,
+                created_at: new Date().toISOString()
+            };
+
+            localStorage.setItem('blogPreview', JSON.stringify(previewData));
+            window.open('preview.html', '_blank');
+        }
+
+        function updatePostStatus(status) {
+            const statusElement = document.getElementById('postStatus');
+            const statusText = status === 'published' ? 'Publicado' : 'Borrador';
+            const statusIcon = status === 'published' ? '📤' : '📝';
+
+            statusElement.innerHTML = `<span>${statusIcon}</span> ${statusText}`;
+            statusElement.className = `status-indicator status-${status}`;
+        }
+
+        function showSaveStatus(message) {
+            const statusElement = document.getElementById('saveStatus');
+            statusElement.textContent = message;
+            statusElement.classList.add('visible');
+
+            setTimeout(() => {
+                statusElement.classList.remove('visible');
+            }, 2000);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function checkForExistingPost() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+
+            if (postId) {
+                loadExistingPost(postId);
+            }
+        }
+
+        async function loadExistingPost(postId) {
+            try {
+                const response = await fetch(`/api/posts/${postId}`, {
+                    credentials: 'include'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    currentPost = result.data;
+                    populateEditor(result.data);
+                } else {
+                    showNotification('Error al cargar la publicación', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading post:', error);
+                showNotification('Error al cargar la publicación', 'error');
+            }
+        }
+
+        function populateEditor(post) {
+            document.getElementById('postTitle').value = post.title;
+            quill.root.innerHTML = post.content;
+            document.getElementById('postCategory').value = post.category || '';
+            document.getElementById('postTags').value = post.tags ? post.tags.join(', ') : '';
+            document.getElementById('postExcerpt').value = post.excerpt || '';
+
+            if (post.featured_image) {
+                featuredImagePath = post.featured_image;
+                showPreviewImage(post.featured_image);
+            }
+
+            updatePostStatus(post.status);
+            updateStats();
+            updateExcerptCount();
+        }
+
+        // Funciones de autenticación
+        async function checkAuthentication() {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        // Usuario autenticado, mostrar información y continuar
+                        showUserInfo(result.user);
+                        initializeEditor();
+                        setupEventListeners();
+                        updateStats();
+                        updateExcerptCount();
+                        checkForExistingPost();
+                    } else {
+                        redirectToLogin();
+                    }
+                } else {
+                    redirectToLogin();
+                }
+            } catch (error) {
+                console.error('Error verificando autenticación:', error);
+                redirectToLogin();
+            }
+        }
+
+        function showUserInfo(user) {
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            
+            userName.textContent = `Hola, ${user.display_name || user.username}`;
+            userInfo.style.display = 'flex';
+        }
+
+        function redirectToLogin() {
+            showNotification('Debes iniciar sesión para acceder al editor', 'error');
+            setTimeout(() => {
+                window.location.href = '/frontend/login.html';
+            }, 2000);
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    showNotification('Sesión cerrada exitosamente', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/frontend/login.html';
+                    }, 1000);
+                } else {
+                    showNotification('Error al cerrar sesión', 'error');
+                }
+            } catch (error) {
+                console.error('Error cerrando sesión:', error);
+                showNotification('Error al cerrar sesión', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

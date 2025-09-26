@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="post-title">Publicación del Blog - Editorial Blog</title>
+    <meta name="description" id="post-description" content="Lee este artículo perspicaz en nuestra plataforma de blog editorial.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Suisse+Intl:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Canela:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.min.js"></script>
+    
+    <style>
+        :root {
+            --charcoal: #2C2C2C;
+            --warm-white: #FEFEFE;
+            --sage-green: #8B9A7A;
+            --soft-gray: #F8F8F8;
+            --muted-gold: #D4B896;
+            --cream: #FDFCF8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--charcoal);
+            background-color: var(--warm-white);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(254, 254, 254, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(139, 154, 122, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Canela', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: var(--sage-green);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--charcoal);
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--sage-green);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--sage-green);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .back-btn {
+            background: var(--sage-green);
+            color: var(--warm-white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--muted-gold);
+            transform: translateY(-2px);
+        }
+
+        /* Reading Progress Bar */
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--sage-green);
+            z-index: 999;
+            transition: width 0.1s ease;
+        }
+
+        /* Post Header */
+        .post-header {
+            padding: 8rem 2rem 3rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--warm-white) 100%);
+            position: relative;
+        }
+
+        .post-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('resources/hero-writing.jpg') center/cover;
+            opacity: 0.03;
+            z-index: 0;
+        }
+
+        .post-header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .post-category {
+            display: inline-block;
+            background: var(--sage-green);
+            color: var(--warm-white);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-title {
+            font-family: 'Canela', serif;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            color: var(--sage-green);
+            font-size: 0.95rem;
+        }
+
+        .post-meta > * {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .post-featured-image {
+            width: 100%;
+            max-width: 900px;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 2rem auto 0;
+            box-shadow: 0 8px 30px rgba(44, 44, 44, 0.1);
+        }
+
+        /* Post Content */
+        .post-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .post-content h2 {
+            font-family: 'Canela', serif;
+            font-size: 2rem;
+            color: var(--charcoal);
+            margin: 3rem 0 1.5rem;
+            line-height: 1.3;
+        }
+
+        .post-content h3 {
+            font-family: 'Canela', serif;
+            font-size: 1.5rem;
+            color: var(--charcoal);
+            margin: 2.5rem 0 1rem;
+            line-height: 1.4;
+        }
+
+        .post-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .post-content ul,
+        .post-content ol {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+        }
+
+        .post-content li {
+            margin-bottom: 0.75rem;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .post-content li strong {
+            color: var(--sage-green);
+            font-weight: 600;
+        }
+
+        .post-content blockquote {
+            border-left: 4px solid var(--sage-green);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            background: var(--soft-gray);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        .post-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 2rem 0;
+            box-shadow: 0 4px 20px rgba(44, 44, 44, 0.1);
+        }
+
+        /* Social Sharing */
+        .social-sharing {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 3rem 0;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(139, 154, 122, 0.2);
+            border-bottom: 1px solid rgba(139, 154, 122, 0.2);
+        }
+
+        .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--sage-green);
+            background: transparent;
+            color: var(--sage-green);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .share-btn:hover {
+            background: var(--sage-green);
+            color: var(--warm-white);
+            transform: translateY(-2px);
+        }
+
+        /* Related Posts */
+        .related-posts {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .related-posts h3 {
+            font-family: 'Canela', serif;
+            font-size: 2rem;
+            color: var(--charcoal);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .related-card {
+            background: var(--warm-white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(44, 44, 44, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .related-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(44, 44, 44, 0.15);
+        }
+
+        .related-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .related-content {
+            padding: 1.5rem;
+        }
+
+        .related-title {
+            font-family: 'Canela', serif;
+            font-size: 1.25rem;
+            color: var(--charcoal);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .related-excerpt {
+            color: var(--charcoal);
+            opacity: 0.7;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--charcoal);
+            color: var(--warm-white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer p {
+            opacity: 0.8;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--soft-gray);
+            border-top: 3px solid var(--sage-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .post-header {
+                padding: 6rem 1rem 2rem;
+            }
+
+            .post-meta {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .post-content {
+                padding: 2rem 1rem;
+            }
+
+            .post-content h2 {
+                font-size: 1.75rem;
+            }
+
+            .post-content h3 {
+                font-size: 1.25rem;
+            }
+
+            .social-sharing {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .related-posts {
+                padding: 0 1rem;
+            }
+
+            .related-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="readingProgress"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Editorial</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="about.html">Acerca de</a></li>
+                <li><a href="editor.html">Editor</a></li>
+            </ul>
+            <button class="back-btn" onclick="goBack()">← Volver</button>
+        </div>
+    </nav>
+
+    <!-- Post Header -->
+    <header class="post-header" id="postHeader">
+        <div class="loading" id="loadingState">
+            <div class="loading-spinner"></div>
+            <p>Cargando artículo...</p>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <main class="post-content" id="postContent">
+        <!-- Content will be loaded here -->
+    </main>
+
+    <!-- Social Sharing -->
+    <div class="social-sharing" id="socialSharing">
+        <button class="share-btn" onclick="sharePost('twitter')">
+            <span>🐦</span> Compartir en Twitter
+        </button>
+        <button class="share-btn" onclick="sharePost('facebook')">
+            <span>📘</span> Compartir en Facebook
+        </button>
+        <button class="share-btn" onclick="sharePost('linkedin')">
+            <span>💼</span> Compartir en LinkedIn
+        </button>
+        <button class="share-btn" onclick="copyLink()">
+            <span>🔗</span> Copiar Enlace
+        </button>
+    </div>
+
+    <!-- Related Posts -->
+    <section class="related-posts" id="relatedPosts">
+        <h3>Artículos Relacionados</h3>
+        <div class="related-grid" id="relatedGrid">
+            <!-- Related posts will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Editorial Blog. Crafted with care for thoughtful creators.</p>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        let currentPost = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPost();
+            setupReadingProgress();
+        });
+
+        async function loadPost() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('slug');
+            
+            if (!slug) {
+                showError('Artículo no encontrado');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/posts/slug/${slug}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    currentPost = result.data;
+                    displayPost(result.data);
+                    loadRelatedPosts(result.data.category, result.data.id);
+                    updatePageMetadata(result.data);
+                } else {
+                    showError('Artículo no encontrado');
+                }
+            } catch (error) {
+                console.error('Error loading post:', error);
+                showError('No se pudo cargar el artículo');
+            }
+        }
+
+        function displayPost(post) {
+            // Hide loading state
+            document.getElementById('loadingState').style.display = 'none';
+
+            // Create post header
+            const headerHTML = `
+                <div class="post-header-content fade-in">
+                    ${post.category ? `<span class="post-category">${post.category}</span>` : ''}
+                    <h1 class="post-title">${post.title}</h1>
+                    <div class="post-meta">
+                        <span>📅 ${formatDate(post.created_at)}</span>
+                        <span>👁️ ${post.view_count || 0} visualizaciones</span>
+                        <span>⏱️ ${estimateReadingTime(post.content)} min de lectura</span>
+                    </div>
+                    ${post.featured_image ? `
+                        <img src="${post.featured_image}" alt="${post.title}" class="post-featured-image">
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('postHeader').innerHTML = headerHTML;
+
+            // Create post content
+            const contentHTML = `
+                <div class="fade-in">
+                    ${post.content}
+                    
+                    ${post.tags && post.tags.length > 0 ? `
+                        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(139, 154, 122, 0.2);">
+                            <h4 style="color: var(--sage-green); margin-bottom: 1rem;">Etiquetas:</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                ${post.tags.map(tag => `
+                                    <span style="background: var(--soft-gray); color: var(--charcoal); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">
+                                        ${tag}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('postContent').innerHTML = contentHTML;
+
+            // Animate content
+            anime({
+                targets: '.fade-in',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                delay: anime.stagger(200),
+                duration: 800,
+                easing: 'easeOutQuart'
+            });
+        }
+
+        async function loadRelatedPosts(category, currentPostId) {
+            try {
+                const response = await fetch(`/api/posts?status=published&category=${category}&limit=3`);
+                const result = await response.json();
+
+                if (result.success) {
+                    // Filter out current post
+                    const relatedPosts = result.data.filter(post => post.id !== currentPostId);
+                    displayRelatedPosts(relatedPosts);
+                }
+            } catch (error) {
+                console.error('Error loading related posts:', error);
+            }
+        }
+
+        function displayRelatedPosts(posts) {
+            const container = document.getElementById('relatedGrid');
+            
+            if (posts.length === 0) {
+                document.getElementById('relatedPosts').style.display = 'none';
+                return;
+            }
+
+            const postsHTML = posts.map(post => `
+                <div class="related-card" onclick="openPost('${post.slug}')">
+                    ${post.featured_image ? `
+                        <img src="${post.featured_image}" alt="${post.title}" class="related-image">
+                    ` : ''}
+                    <div class="related-content">
+                        <h4 class="related-title">${post.title}</h4>
+                        <p class="related-excerpt">${post.excerpt}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = postsHTML;
+        }
+
+        function updatePageMetadata(post) {
+            document.getElementById('post-title').textContent = `${post.title} - Editorial Blog`;
+            document.getElementById('post-description').setAttribute('content', post.excerpt || 'Read this insightful article on our editorial blog platform.');
+        }
+
+        function setupReadingProgress() {
+            window.addEventListener('scroll', () => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                document.getElementById('readingProgress').style.width = scrolled + '%';
+            });
+        }
+
+        function goBack() {
+            if (document.referrer && document.referrer.includes(window.location.origin)) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function openPost(slug) {
+            window.location.href = `post.html?slug=${slug}`;
+        }
+
+        function sharePost(platform) {
+            const url = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(currentPost?.title || '');
+            
+            const shareUrls = {
+                twitter: `https://twitter.com/intent/tweet?text=${title}&url=${url}`,
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`
+            };
+
+            if (shareUrls[platform]) {
+                window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+            }
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                // Show success message
+                const btn = event.target.closest('.share-btn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span>✅</span> ¡Copiado!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function estimateReadingTime(content) {
+            // Remove HTML tags and count words
+            const text = content.replace(/<[^>]*>/g, '');
+            const wordCount = text.split(/\s+/).length;
+            return Math.ceil(wordCount / 200); // Average reading speed: 200 words per minute
+        }
+
+        function showError(message) {
+            document.getElementById('loadingState').innerHTML = `
+                <div style="text-align: center; color: var(--charcoal); opacity: 0.7;">
+                    <h3>${message}</h3>
+                    <p><a href="index.html" style="color: var(--sage-green); text-decoration: none;">← Volver al Inicio</a></p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

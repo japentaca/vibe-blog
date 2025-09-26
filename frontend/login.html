@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #e53e3e;
+            background: #fed7d7;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.error {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .alert.success {
+            background: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #764ba2;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1 class="login-title">Iniciar Sesión</h1>
+            <p class="login-subtitle">Accede a tu panel de administración</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username" class="form-label">Usuario o Email</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    class="form-input" 
+                    required
+                    autocomplete="username"
+                    placeholder="Ingresa tu usuario o email"
+                >
+                <div class="error-message" id="usernameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-input" 
+                    required
+                    autocomplete="current-password"
+                    placeholder="Ingresa tu contraseña"
+                >
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <button type="submit" class="login-button" id="loginButton">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="buttonText">Iniciar Sesión</span>
+            </button>
+        </form>
+
+        <div class="back-link">
+            <a href="/">← Volver al blog</a>
+        </div>
+    </div>
+
+    <script>
+        class LoginManager {
+            constructor() {
+                this.form = document.getElementById('loginForm');
+                this.alert = document.getElementById('alert');
+                this.button = document.getElementById('loginButton');
+                this.spinner = document.getElementById('loadingSpinner');
+                this.buttonText = document.getElementById('buttonText');
+                
+                this.init();
+            }
+
+            init() {
+                this.form.addEventListener('submit', this.handleSubmit.bind(this));
+                
+                // Verificar si ya está autenticado
+                this.checkAuthStatus();
+            }
+
+            async checkAuthStatus() {
+                try {
+                    const response = await fetch('/api/auth/me', {
+                        credentials: 'include'
+                    });
+                    
+                    if (response.ok) {
+                        // Ya está autenticado, redirigir al editor
+                        window.location.href = '/editor';
+                    }
+                } catch (error) {
+                    // No está autenticado, continuar normalmente
+                }
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                this.clearErrors();
+                this.setLoading(true);
+                
+                const formData = new FormData(this.form);
+                const loginData = {
+                    usernameOrEmail: formData.get('username').trim(),
+                    password: formData.get('password')
+                };
+
+                // Validación básica
+                if (!this.validateForm(loginData)) {
+                    this.setLoading(false);
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify(loginData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        this.showAlert('Inicio de sesión exitoso. Redirigiendo...', 'success');
+                        
+                        // Redirigir después de un breve delay
+                        setTimeout(() => {
+                            window.location.href = '/editor';
+                        }, 1000);
+                    } else {
+                        this.showAlert(result.message || 'Error al iniciar sesión', 'error');
+                        this.setLoading(false);
+                    }
+                } catch (error) {
+                    console.error('Error de login:', error);
+                    this.showAlert('Error de conexión. Inténtalo de nuevo.', 'error');
+                    this.setLoading(false);
+                }
+            }
+
+            validateForm(data) {
+                let isValid = true;
+
+                if (!data.usernameOrEmail) {
+                    this.showFieldError('username', 'El usuario o email es requerido');
+                    isValid = false;
+                }
+
+                if (!data.password) {
+                    this.showFieldError('password', 'La contraseña es requerida');
+                    isValid = false;
+                } else if (data.password.length < 6) {
+                    this.showFieldError('password', 'La contraseña debe tener al menos 6 caracteres');
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            showFieldError(fieldName, message) {
+                const field = document.getElementById(fieldName);
+                const errorElement = document.getElementById(fieldName + 'Error');
+                
+                field.classList.add('error');
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+
+            clearErrors() {
+                const inputs = this.form.querySelectorAll('.form-input');
+                const errors = this.form.querySelectorAll('.error-message');
+                
+                inputs.forEach(input => input.classList.remove('error'));
+                errors.forEach(error => {
+                    error.style.display = 'none';
+                    error.textContent = '';
+                });
+                
+                this.hideAlert();
+            }
+
+            showAlert(message, type) {
+                this.alert.textContent = message;
+                this.alert.className = `alert ${type}`;
+                this.alert.style.display = 'block';
+            }
+
+            hideAlert() {
+                this.alert.style.display = 'none';
+            }
+
+            setLoading(loading) {
+                this.button.disabled = loading;
+                
+                if (loading) {
+                    this.spinner.style.display = 'inline-block';
+                    this.buttonText.textContent = 'Iniciando sesión...';
+                } else {
+                    this.spinner.style.display = 'none';
+                    this.buttonText.textContent = 'Iniciar Sesión';
+                }
+            }
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            new LoginManager();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Previa de Publicación - Editorial Blog</title>
+    <meta name="description" content="Previsualiza tu publicación de blog antes de publicarla.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Suisse+Intl:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Canela:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --charcoal: #2C2C2C;
+            --warm-white: #FEFEFE;
+            --sage-green: #8B9A7A;
+            --soft-gray: #F8F8F8;
+            --muted-gold: #D4B896;
+            --cream: #FDFCF8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--charcoal);
+            background-color: var(--warm-white);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(254, 254, 254, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(139, 154, 122, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Canela', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            text-decoration: none;
+        }
+
+        .preview-badge {
+            background: var(--sage-green);
+            color: var(--warm-white);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Post Content */
+        .post-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--soft-gray);
+        }
+
+        .post-category {
+            display: inline-block;
+            background: var(--sage-green);
+            color: var(--warm-white);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-title {
+            font-family: 'Canela', serif;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            color: var(--sage-green);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .post-featured-image {
+            width: 100%;
+            max-width: 700px;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 0 auto 2rem;
+            box-shadow: 0 8px 30px rgba(44, 44, 44, 0.1);
+        }
+
+        .post-body {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .post-body h1 {
+            font-family: 'Canela', serif;
+            font-size: 2rem;
+            margin: 2rem 0 1rem;
+            color: var(--charcoal);
+        }
+
+        .post-body h2 {
+            font-family: 'Canela', serif;
+            font-size: 1.75rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--charcoal);
+        }
+
+        .post-body h3 {
+            font-family: 'Canela', serif;
+            font-size: 1.5rem;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--charcoal);
+        }
+
+        .post-body p {
+            margin-bottom: 1.5rem;
+        }
+
+        .post-body ul,
+        .post-body ol {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+        }
+
+        .post-body li {
+            margin-bottom: 0.75rem;
+        }
+
+        .post-body blockquote {
+            border-left: 4px solid var(--sage-green);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            background: var(--soft-gray);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .post-body img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--charcoal);
+            opacity: 0.6;
+        }
+
+        .empty-state h3 {
+            font-family: 'Canela', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .post-content {
+                padding: 5rem 1rem 1rem;
+            }
+
+            .post-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .post-body {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Editorial</a>
+            <div class="preview-badge">👁️ Modo Vista Previa</div>
+        </div>
+    </nav>
+
+    <!-- Post Content -->
+    <main class="post-content" id="postContent">
+        <div class="empty-state" id="emptyState">
+            <h3>Vista Previa No Disponible</h3>
+            <p>Regresa al editor para crear y previsualizar tu publicación.</p>
+            <p><a href="editor.html" style="color: var(--sage-green); text-decoration: none;">← Volver al Editor</a></p>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPreview();
+        });
+
+        function loadPreview() {
+            try {
+                const previewData = localStorage.getItem('blogPreview');
+                
+                if (!previewData) {
+                    return; // Show empty state
+                }
+
+                const post = JSON.parse(previewData);
+                displayPreview(post);
+                
+                // Clear the preview data after displaying
+                localStorage.removeItem('blogPreview');
+                
+            } catch (error) {
+                console.error('Error loading preview:', error);
+                // Show empty state on error
+            }
+        }
+
+        function displayPreview(post) {
+            const container = document.getElementById('postContent');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Hide empty state
+            emptyState.style.display = 'none';
+            
+            const previewHTML = `
+                <article class="post-preview">
+                    <header class="post-header">
+                        ${post.category ? `<span class="post-category">${post.category}</span>` : ''}
+                        <h1 class="post-title">${post.title || 'Publicación Sin Título'}</h1>
+            <div class="post-meta">
+                <span>📅 ${formatDate(post.created_at || new Date().toISOString())}</span>
+                <span>⏱️ ${estimateReadingTime(post.content)} min de lectura</span>
+            </div>
+                        ${post.featured_image ? `
+                            <img src="${post.featured_image}" alt="${post.title}" class="post-featured-image">
+                        ` : ''}
+                    </header>
+                    
+                    <div class="post-body">
+                ${post.content || '<p>Comienza a escribir tu contenido...</p>'}
+            </div>
+                    
+                    ${post.tags && post.tags.length > 0 ? `
+                        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(139, 154, 122, 0.2);">
+                        <h4 style="color: var(--sage-green); margin-bottom: 1rem;">Etiquetas:</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                ${post.tags.map(tag => `
+                                    <span style="background: var(--soft-gray); color: var(--charcoal); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem;">
+                                        ${tag}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </article>
+            `;
+            
+            container.innerHTML = previewHTML;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function estimateReadingTime(content) {
+            if (!content) return 0;
+            const text = content.replace(/<[^>]*>/g, '');
+            const wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+            return Math.ceil(wordCount / 200);
+        }
+    </script>
+</body>
+</html>
