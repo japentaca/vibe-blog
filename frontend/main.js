@@ -291,12 +291,123 @@ document.addEventListener('DOMContentLoaded', () => {
     NavigationService.init();
 });
 
+// HomePage specific functionality
+const HomePage = {
+    init: function() {
+        this.loadPosts();
+        this.setupSearch();
+        this.setupCategoryFilters();
+    },
+
+    loadPosts: async function(category = 'all', search = '') {
+        const container = document.getElementById('postsContainer');
+        
+        try {
+            let url = `${API_BASE_URL}/api/posts?status=published`;
+            if (category !== 'all') {
+                url += `&category=${encodeURIComponent(category)}`;
+            }
+            if (search) {
+                url += `&search=${encodeURIComponent(search)}`;
+            }
+
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (result.success) {
+                this.displayPosts(result.data);
+            } else {
+                throw new Error('Failed to load posts');
+            }
+        } catch (error) {
+            console.error('Error loading posts:', error);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>No se pudieron cargar los artículos</h3>
+                    <p>Por favor, inténtalo de nuevo más tarde.</p>
+                </div>
+            `;
+        }
+    },
+
+    displayPosts: function(posts) {
+        const container = document.getElementById('postsContainer');
+        
+        if (posts.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>No se encontraron artículos</h3>
+                    <p>Intenta ajustar tus criterios de búsqueda o filtro.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const postsHTML = posts.map((post, index) => `
+            <article class="post-card fade-in stagger" style="--delay: ${index}" onclick="HomePage.openPost('${post.slug}')">
+                ${post.featured_image ? `
+                    <img src="${post.featured_image}" alt="${post.title}" class="post-image">
+                ` : ''}
+                <div class="post-content">
+                    ${post.category ? `<span class="post-category">${post.category}</span>` : ''}
+                    <h3 class="post-title">${post.title}</h3>
+                    <p class="post-excerpt">${post.excerpt}</p>
+                    <div class="post-meta">
+                        <span class="post-date">${Utils.formatDate(post.created_at)}</span>
+                        <div class="post-stats">
+                            <span>${post.view_count || 0} views</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+
+        container.innerHTML = `<div class="posts-grid">${postsHTML}</div>`;
+    },
+
+    setupSearch: function() {
+        const searchInput = document.getElementById('searchInput');
+        let searchTimeout;
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const activeCategory = document.querySelector('.filter-btn.active')?.dataset.category || 'all';
+                    HomePage.loadPosts(activeCategory, this.value);
+                }, 300);
+            });
+        }
+    },
+
+    setupCategoryFilters: function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active state
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Load posts for selected category
+                const searchInput = document.getElementById('searchInput');
+                HomePage.loadPosts(this.dataset.category, searchInput?.value || '');
+            });
+        });
+    },
+
+    openPost: function(slug) {
+        window.location.href = `/post?slug=${slug}`;
+    }
+};
+
 // Export services for use in other scripts
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         Utils,
         ApiService,
         NavigationService,
-        FormService
+        FormService,
+        HomePage
     };
 }

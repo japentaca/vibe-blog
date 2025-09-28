@@ -65,11 +65,59 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files
-app.use('/resources', express.static(path.join(__dirname, '../frontend/resources')));
+// Configuración segura de archivos estáticos
+const staticOptions = {
+  // Opciones de seguridad
+  dotfiles: 'deny', // Denegar acceso a archivos que empiecen con punto
+  index: false, // No servir archivos index automáticamente
+  redirect: false, // No redirigir automáticamente
+  setHeaders: (res, path, stat) => {
+    // Configurar headers de seguridad para archivos estáticos
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'DENY');
+    res.set('X-XSS-Protection', '1; mode=block');
+    
+    // Configurar cache para producción con NGINX
+    if (process.env.NODE_ENV === 'production') {
+      // En producción, NGINX manejará el cache
+      res.set('Cache-Control', 'no-cache');
+    } else {
+      // En desarrollo, cache corto para facilitar desarrollo
+      res.set('Cache-Control', 'public, max-age=300'); // 5 minutos
+    }
+  }
+};
 
-// Serve frontend static files
-app.use('/frontend', express.static(path.join(__dirname, '../frontend')));
+// Servir recursos estáticos (imágenes, CSS, etc.)
+app.use('/resources', express.static(path.join(__dirname, '../frontend/resources'), staticOptions));
+
+// Servir archivos JavaScript específicos de forma segura
+app.use('/js', express.static(path.join(__dirname, '../frontend'), {
+  ...staticOptions,
+  // Solo permitir archivos .js
+  setHeaders: (res, filePath, stat) => {
+    staticOptions.setHeaders(res, filePath, stat);
+    
+    // Verificar que sea un archivo JavaScript
+    if (!filePath.endsWith('.js')) {
+      res.status(403).end();
+      return;
+    }
+    
+    // Configurar tipo MIME correcto para JavaScript
+    res.set('Content-Type', 'application/javascript; charset=utf-8');
+  }
+}));
+
+// Middleware para validar archivos estáticos solicitados
+app.use((req, res, next) => {
+  // Verificar si la solicitud es para un archivo estático
+  if (req.path.includes('..') || req.path.includes('~')) {
+    // Prevenir directory traversal
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+  next();
+});
 
 // API Routes
 app.use('/api/auth', authRouter);
