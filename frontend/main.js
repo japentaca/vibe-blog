@@ -60,8 +60,6 @@ const Utils = {
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(44, 44, 44, 0.15);
             z-index: 1001;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
             font-size: 0.95rem;
             max-width: 300px;
         `;
@@ -72,17 +70,9 @@ const Utils = {
 
         document.body.appendChild(notification);
 
-        // Animate in
+        // Remove notification after duration
         setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-
-        // Animate out and remove
-        setTimeout(() => {
-            notification.style.transform = 'translateX(400px)';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
+            document.body.removeChild(notification);
         }, duration);
     },
 
@@ -216,169 +206,14 @@ const ApiService = {
     }
 };
 
-// Animation Service
-const AnimationService = {
-    // Fade in animation
-    fadeIn: (elements, options = {}) => {
-        const {
-            delay = 0,
-            duration = 600,
-            stagger = 100
-        } = options;
 
-        anime({
-            targets: elements,
-            opacity: [0, 1],
-            translateY: [20, 0],
-            delay: anime.stagger(stagger, { start: delay }),
-            duration: duration,
-            easing: 'easeOutQuart'
-        });
-    },
 
-    // Slide in from left
-    slideInLeft: (elements, options = {}) => {
-        const {
-            delay = 0,
-            duration = 800
-        } = options;
 
-        anime({
-            targets: elements,
-            opacity: [0, 1],
-            translateX: [-50, 0],
-            delay: delay,
-            duration: duration,
-            easing: 'easeOutQuart'
-        });
-    },
-
-    // Slide in from right
-    slideInRight: (elements, options = {}) => {
-        const {
-            delay = 0,
-            duration = 800
-        } = options;
-
-        anime({
-            targets: elements,
-            opacity: [0, 1],
-            translateX: [50, 0],
-            delay: delay,
-            duration: duration,
-            easing: 'easeOutQuart'
-        });
-    },
-
-    // Scale animation
-    scaleIn: (elements, options = {}) => {
-        const {
-            delay = 0,
-            duration = 400
-        } = options;
-
-        anime({
-            targets: elements,
-            opacity: [0, 1],
-            scale: [0.8, 1],
-            delay: delay,
-            duration: duration,
-            easing: 'easeOutBack'
-        });
-    },
-
-    // Hover lift effect
-    hoverLift: (element) => {
-        element.addEventListener('mouseenter', () => {
-            anime({
-                targets: element,
-                translateY: -8,
-                scale: 1.02,
-                duration: 300,
-                easing: 'easeOutQuart'
-            });
-        });
-
-        element.addEventListener('mouseleave', () => {
-            anime({
-                targets: element,
-                translateY: 0,
-                scale: 1,
-                duration: 300,
-                easing: 'easeOutQuart'
-            });
-        });
-    }
-};
-
-// Scroll Animations
-const ScrollAnimations = {
-    observer: null,
-
-    init: () => {
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        ScrollAnimations.observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const element = entry.target;
-                    const animationType = element.dataset.animation || 'fadeIn';
-                    const delay = parseInt(element.dataset.delay) || 0;
-
-                    switch (animationType) {
-                        case 'fadeIn':
-                            AnimationService.fadeIn([element], { delay });
-                            break;
-                        case 'slideInLeft':
-                            AnimationService.slideInLeft([element], { delay });
-                            break;
-                        case 'slideInRight':
-                            AnimationService.slideInRight([element], { delay });
-                            break;
-                        case 'scaleIn':
-                            AnimationService.scaleIn([element], { delay });
-                            break;
-                    }
-
-                    ScrollAnimations.observer.unobserve(element);
-                }
-            });
-        }, observerOptions);
-
-        // Observe elements with animation classes
-        const animatedElements = document.querySelectorAll('[data-animation]');
-        animatedElements.forEach(element => {
-            ScrollAnimations.observer.observe(element);
-        });
-    },
-
-    // Add animation to element
-    addTo: (element, animationType = 'fadeIn', delay = 0) => {
-        element.dataset.animation = animationType;
-        element.dataset.delay = delay;
-        ScrollAnimations.observer.observe(element);
-    }
-};
 
 // Navigation Service
 const NavigationService = {
     init: () => {
-        // Add smooth scrolling to anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
+        // Navegación básica sin animaciones
 
         // Highlight active navigation item
         NavigationService.highlightActiveNav();
@@ -452,17 +287,8 @@ const FormService = {
 
 // Initialize services when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize scroll animations
-    ScrollAnimations.init();
-    
     // Initialize navigation
     NavigationService.init();
-    
-    // Add hover effects to cards
-    const cards = document.querySelectorAll('.post-card, .feature-card, .related-card');
-    cards.forEach(card => {
-        AnimationService.hoverLift(card);
-    });
 });
 
 // Export services for use in other scripts
@@ -470,8 +296,6 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         Utils,
         ApiService,
-        AnimationService,
-        ScrollAnimations,
         NavigationService,
         FormService
     };

@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
     <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.min.js"></script>
@@ -51,7 +50,6 @@
             background: var(--primary-blue);
             z-index: 1000;
             padding: 1rem 0;
-            transition: all 0.3s ease;
             height: 64px;
             display: flex;
             align-items: center;
@@ -70,7 +68,6 @@
             display: flex;
             align-items: center;
             text-decoration: none;
-            transition: opacity 0.3s ease;
         }
 
         .logo img {
@@ -92,7 +89,6 @@
             color: var(--warm-white);
             text-decoration: none;
             font-weight: 500;
-            transition: opacity 0.3s ease;
             position: relative;
             font-size: 0.9rem;
         }
@@ -166,7 +162,6 @@
             border-radius: 50px;
             font-size: 1rem;
             background: var(--warm-white);
-            transition: all 0.3s ease;
             font-family: 'Montserrat', sans-serif;
         }
 
@@ -190,7 +185,6 @@
             border-radius: 25px;
             font-family: 'Montserrat', sans-serif;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-size: 0.9rem;
             font-weight: 500;
         }
@@ -231,13 +225,11 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(21, 23, 26, 0.08);
-            transition: all 0.3s ease;
             cursor: pointer;
             border: 1px solid var(--white-grey);
         }
 
         .post-card:hover {
-            transform: translateY(-8px);
             box-shadow: 0 12px 40px rgba(0, 128, 235, 0.15);
         }
 
@@ -245,11 +237,6 @@
             width: 100%;
             height: 200px;
             object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .post-card:hover .post-image {
-            transform: scale(1.05);
         }
 
         .post-content {
@@ -308,20 +295,7 @@
             padding: 4rem 2rem;
         }
 
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--soft-gray);
-            border-top: 3px solid var(--sage-green);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
 
         /* Empty State */
         .empty-state {
@@ -385,23 +359,7 @@
             }
         }
 
-        /* Animation Classes */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease forwards;
-        }
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stagger {
-            animation-delay: calc(0.1s * var(--delay));
-        }
     </style>
 </head>
 <body>
@@ -451,7 +409,6 @@
         
         <div id="postsContainer">
             <div class="loading">
-                <div class="loading-spinner"></div>
                 <p>Cargando artículos...</p>
             </div>
         </div>
@@ -554,16 +511,6 @@
             `).join('');
 
             container.innerHTML = `<div class="posts-grid">${postsHTML}</div>`;
-
-            // Animate cards
-            anime({
-                targets: '.post-card',
-                opacity: [0, 1],
-                translateY: [20, 0],
-                delay: anime.stagger(100),
-                duration: 600,
-                easing: 'easeOutQuart'
-            });
         }
 
         function setupSearch() {
@@ -608,25 +555,7 @@
             });
         }
 
-        // Smooth scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in');
-                }
-            });
-        }, observerOptions);
-
-        // Observe elements for animation
-        document.addEventListener('DOMContentLoaded', () => {
-            const animatedElements = document.querySelectorAll('.hero-content, .search-section, .section-title');
-            animatedElements.forEach(el => observer.observe(el));
-        });
     </script>
 </body>
 </html>

@@ -13,7 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@300;400;700&display=swap" rel="stylesheet">
     
     <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
     <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.min.js"></script>
     
@@ -68,7 +67,6 @@
             display: flex;
             align-items: center;
             text-decoration: none;
-            transition: opacity 0.3s ease;
         }
 
         .logo:hover {
@@ -92,7 +90,6 @@
             font-family: 'Montserrat', sans-serif;
             font-weight: 500;
             font-size: 0.95rem;
-            transition: opacity 0.3s ease;
             position: relative;
         }
 
@@ -329,7 +326,6 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(44, 44, 44, 0.08);
-            transition: all 0.3s ease;
             cursor: pointer;
         }
 
@@ -391,13 +387,7 @@
             border: 3px solid var(--soft-gray);
             border-top: 3px solid var(--sage-green);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
             margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         /* Responsive Design */
@@ -445,19 +435,7 @@
             }
         }
 
-        /* Animation Classes */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease forwards;
-        }
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
 <body>
@@ -600,16 +578,6 @@
             `;
 
             document.getElementById('postContent').innerHTML = contentHTML;
-
-            // Animate content
-            anime({
-                targets: '.fade-in',
-                opacity: [0, 1],
-                translateY: [20, 0],
-                delay: anime.stagger(200),
-                duration: 800,
-                easing: 'easeOutQuart'
-            });
         }
 
         async function loadRelatedPosts(category, currentPostId) {

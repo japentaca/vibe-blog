@@ -12,7 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
     <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.min.js"></script>
     
@@ -67,7 +66,6 @@
             display: flex;
             align-items: center;
             text-decoration: none;
-            transition: opacity 0.3s ease;
         }
 
         .logo:hover {
@@ -91,7 +89,6 @@
             font-family: 'Montserrat', sans-serif;
             font-weight: 500;
             font-size: 0.95rem;
-            transition: opacity 0.3s ease;
             position: relative;
         }
 
@@ -345,23 +342,7 @@
             }
         }
 
-        /* Animation Classes */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease forwards;
-        }
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stagger {
-            animation-delay: calc(0.1s * var(--delay));
-        }
     </style>
 </head>
 <body>
@@ -528,32 +509,7 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate elements on scroll
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('fade-in');
-                    }
-                });
-            }, observerOptions);
-
-            // Observe all sections
-            const sections = document.querySelectorAll('.about-section, .cta-section');
-            sections.forEach(section => observer.observe(section));
-
-            // Animate feature cards
-            const featureCards = document.querySelectorAll('.feature-card');
-            featureCards.forEach((card, index) => {
-                card.style.setProperty('--delay', index + 1);
-                observer.observe(card);
-            });
-        });
+        // Script básico sin animaciones
     </script>
 </body>
 </html>
