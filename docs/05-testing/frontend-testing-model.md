@@ -4,6 +4,8 @@
 
 Este documento sirve como guía para un agente de testing automatizado que utiliza el MCP de Chrome-DevTools para realizar pruebas exhaustivas del frontend de la plataforma Editorial Blog. El frontend está compuesto por 5 páginas principales con funcionalidades específicas y elementos interactivos que requieren validación.
 
+**IMPORTANTE**: La funcionalidad de edición de posts requiere autenticación. Los usuarios deben iniciar sesión antes de poder crear, editar o eliminar publicaciones.
+
 ## Arquitectura del Frontend
 
 ### Páginas Principales
@@ -19,6 +21,45 @@ Este documento sirve como guía para un agente de testing automatizado que utili
 - **Editor**: Quill.js para edición rica de texto
 - **Animaciones**: Anime.js y Splitting.js
 - **Fuentes**: Suisse Intl y Canela (Google Fonts)
+
+## Sistema de Autenticación
+
+### Credenciales de Prueba
+Para probar las funcionalidades que requieren autenticación, es necesario crear usuarios de prueba utilizando el script del backend:
+
+```bash
+# Navegar al directorio del backend
+cd backend
+
+# Crear usuario administrador de prueba
+node scripts/createUser.js admin password123 admin@test.com admin
+
+# Crear usuario editor de prueba
+node scripts/createUser.js editor password123 editor@test.com editor
+
+# Crear usuario autor de prueba
+node scripts/createUser.js autor password123 autor@test.com author
+
+# Listar usuarios existentes
+node scripts/createUser.js list
+```
+
+### Roles y Permisos
+- **admin**: Puede crear, editar, eliminar y publicar posts. Puede gestionar usuarios.
+- **editor**: Puede crear, editar, eliminar y publicar posts.
+- **author**: Puede crear y editar sus propios posts.
+
+### Rutas Protegidas
+Las siguientes rutas del backend requieren autenticación:
+- `POST /api/posts` - Crear nuevo post (requiere permiso 'create_posts')
+- `PUT /api/posts/:id` - Editar post (requiere ser propietario o tener permisos de edición)
+- `DELETE /api/posts/:id` - Eliminar post (requiere ser propietario o tener permisos de edición)
+
+### Endpoints de Autenticación
+- `POST /api/auth/login` - Iniciar sesión
+- `POST /api/auth/logout` - Cerrar sesión
+- `GET /api/auth/me` - Obtener información del usuario actual
+- `GET /api/auth/check` - Verificar si hay sesión activa
 
 ## Elementos Interactivos Identificados
 
@@ -49,6 +90,87 @@ Este documento sirve como guía para un agente de testing automatizado que utili
 - **Botones de compartir**: Redes sociales
 
 ## Casos de Prueba Específicos para Chrome-DevTools MCP
+
+### 0. Pruebas de Autenticación (PREREQUISITO)
+
+```javascript
+// Caso de prueba: Login de usuario
+{
+  "test_name": "login_usuario_admin",
+  "description": "Autenticación de usuario administrador para pruebas de edición",
+  "steps": [
+    {
+      "action": "navigate_page",
+      "url": "http://localhost:3000/frontend/login.html"
+    },
+    {
+      "action": "take_snapshot",
+      "description": "Capturar estado inicial de la página de login"
+    },
+    {
+      "action": "fill",
+      "selector": "#usernameOrEmail",
+      "value": "admin",
+      "description": "Ingresar nombre de usuario"
+    },
+    {
+      "action": "fill",
+      "selector": "#password",
+      "value": "password123",
+      "description": "Ingresar contraseña"
+    },
+    {
+      "action": "click",
+      "selector": "#loginBtn",
+      "description": "Hacer clic en botón de login"
+    },
+    {
+      "action": "wait_for",
+      "text": "Dashboard",
+      "description": "Esperar redirección exitosa"
+    },
+    {
+      "action": "evaluate_script",
+      "function": "() => { return fetch('/api/auth/check').then(r => r.json()); }",
+      "description": "Verificar estado de autenticación"
+    }
+  ],
+  "expected_results": [
+    "Login debe ser exitoso",
+    "Usuario debe ser redirigido al dashboard o página principal",
+    "Sesión debe estar activa",
+    "API debe confirmar autenticación"
+  ]
+}
+```
+
+```javascript
+// Caso de prueba: Verificación de sesión
+{
+  "test_name": "verificar_sesion_activa",
+  "description": "Verificar que la sesión se mantiene entre páginas",
+  "steps": [
+    {
+      "action": "navigate_page",
+      "url": "http://localhost:3000/frontend/editor.html"
+    },
+    {
+      "action": "evaluate_script",
+      "function": "() => { return fetch('/api/auth/check').then(r => r.json()); }",
+      "description": "Verificar estado de autenticación en editor"
+    },
+    {
+      "action": "take_snapshot",
+      "description": "Capturar estado del editor con usuario autenticado"
+    }
+  ],
+  "expected_results": [
+    "Usuario debe tener acceso al editor",
+    "API debe confirmar sesión activa",
+    "Editor debe mostrar opciones de creación/edición"
+  ]
+}
+```
 
 ### 1. Pruebas de Navegación
 
@@ -124,13 +246,24 @@ Este documento sirve como guía para un agente de testing automatizado que utili
 ### 3. Pruebas del Editor
 
 ```javascript
-// Caso de prueba: Creación de post
+// Caso de prueba: Creación de post (REQUIERE AUTENTICACIÓN PREVIA)
 {
   "test_name": "crear_post_completo",
+  "prerequisites": ["login_usuario_admin"],
+  "description": "Creación completa de un post con usuario autenticado",
   "steps": [
+    {
+      "action": "evaluate_script",
+      "function": "() => { return fetch('/api/auth/check').then(r => r.json()); }",
+      "description": "Verificar autenticación antes de proceder"
+    },
     {
       "action": "navigate_page",
       "url": "http://localhost:3000/frontend/editor.html"
+    },
+    {
+      "action": "take_snapshot",
+      "description": "Capturar estado inicial del editor"
     },
     {
       "action": "fill",
@@ -148,6 +281,16 @@ Este documento sirve como guía para un agente de testing automatizado que utili
     },
     {
       "action": "click",
+      "selector": ".btn-save",
+      "description": "Guardar borrador del post"
+    },
+    {
+      "action": "wait_for",
+      "text": "Borrador guardado",
+      "description": "Esperar confirmación de guardado"
+    },
+    {
+      "action": "click",
       "selector": ".btn-preview",
       "description": "Hacer clic en botón de vista previa"
     },
@@ -158,9 +301,182 @@ Este documento sirve como guía para un agente de testing automatizado que utili
     }
   ],
   "expected_results": [
+    "Usuario debe estar autenticado",
+    "Editor debe cargar correctamente",
+    "Post debe guardarse como borrador",
     "Título debe aparecer en vista previa",
     "Contenido debe renderizarse correctamente",
     "URL debe cambiar a preview.html"
+  ]
+}
+```
+
+```javascript
+// Caso de prueba: Publicación de post
+{
+  "test_name": "publicar_post",
+  "prerequisites": ["login_usuario_admin", "crear_post_completo"],
+  "description": "Publicar un post previamente creado",
+  "steps": [
+    {
+      "action": "navigate_page",
+      "url": "http://localhost:3000/frontend/editor.html"
+    },
+    {
+      "action": "fill",
+      "selector": "#post-title",
+      "value": "Post de Prueba para Publicación"
+    },
+    {
+      "action": "click",
+      "selector": ".ql-editor"
+    },
+    {
+      "action": "evaluate_script",
+      "function": "() => { window.quill.setText('Este post será publicado automáticamente.'); }"
+    },
+    {
+      "action": "fill",
+      "selector": "#category",
+      "value": "Tecnología"
+    },
+    {
+      "action": "click",
+      "selector": ".btn-publish",
+      "description": "Hacer clic en botón de publicar"
+    },
+    {
+      "action": "wait_for",
+      "text": "Post publicado exitosamente",
+      "description": "Esperar confirmación de publicación"
+    },
+    {
+      "action": "navigate_page",
+      "url": "http://localhost:3000/frontend/index.html"
+    },
+    {
+      "action": "wait_for",
+      "text": "Post de Prueba para Publicación",
+      "description": "Verificar que el post aparece en la página principal"
+    }
+  ],
+  "expected_results": [
+    "Post debe publicarse exitosamente",
+    "Debe aparecer confirmación de publicación",
+    "Post debe ser visible en la página principal",
+    "Post debe tener estado 'published'"
+  ]
+}
+```
+
+```javascript
+// Caso de prueba: Edición de post existente
+{
+  "test_name": "editar_post_existente",
+  "prerequisites": ["login_usuario_admin"],
+  "description": "Editar un post existente con permisos de administrador",
+  "steps": [
+    {
+      "action": "navigate_page",
+      "url": "http://localhost:3000/frontend/index.html"
+    },
+    {
+      "action": "click",
+      "selector": ".post-item:first-child .btn-edit",
+      "description": "Hacer clic en botón editar del primer post"
+    },
+    {
+      "action": "wait_for",
+      "text": "Editor",
+      "description": "Esperar carga del editor"
+    },
+    {
+      "action": "evaluate_script",
+      "function": "() => { const title = document.getElementById('post-title'); title.value = title.value + ' - EDITADO'; title.dispatchEvent(new Event('input')); }",
+      "description": "Modificar título del post"
+    },
+    {
+      "action": "click",
+      "selector": ".ql-editor"
+    },
+    {
+      "action": "evaluate_script",
+      "function": "() => { const currentText = window.quill.getText(); window.quill.setText(currentText + '\\n\\nContenido editado automáticamente.'); }",
+      "description": "Agregar contenido al post"
+    },
+    {
+      "action": "click",
+      "selector": ".btn-save",
+      "description": "Guardar cambios"
+    },
+    {
+      "action": "wait_for",
+      "text": "Post actualizado",
+      "description": "Esperar confirmación de actualización"
+    },
+    {
+      "action": "navigate_page",
+      "url": "http://localhost:3000/frontend/index.html"
+    },
+    {
+      "action": "wait_for",
+      "text": "EDITADO",
+      "description": "Verificar que los cambios se reflejan en la lista"
+    }
+  ],
+  "expected_results": [
+    "Usuario debe tener permisos de edición",
+    "Editor debe cargar con contenido existente",
+    "Cambios deben guardarse correctamente",
+    "Post editado debe aparecer en la lista principal",
+    "Título debe mostrar la modificación"
+  ]
+}
+```
+
+```javascript
+// Caso de prueba: Eliminación de post
+{
+  "test_name": "eliminar_post",
+  "prerequisites": ["login_usuario_admin"],
+  "description": "Eliminar un post con permisos de administrador",
+  "steps": [
+    {
+      "action": "navigate_page",
+      "url": "http://localhost:3000/frontend/index.html"
+    },
+    {
+      "action": "evaluate_script",
+      "function": "() => { return document.querySelectorAll('.post-item').length; }",
+      "description": "Contar posts antes de eliminar"
+    },
+    {
+      "action": "click",
+      "selector": ".post-item:last-child .btn-delete",
+      "description": "Hacer clic en botón eliminar del último post"
+    },
+    {
+      "action": "handle_dialog",
+      "action": "accept",
+      "description": "Confirmar eliminación en el diálogo"
+    },
+    {
+      "action": "wait_for",
+      "text": "Post eliminado",
+      "description": "Esperar confirmación de eliminación"
+    },
+    {
+      "action": "evaluate_script",
+      "function": "() => { return document.querySelectorAll('.post-item').length; }",
+      "description": "Verificar que el número de posts disminuyó"
+    }
+  ],
+  "expected_results": [
+    "Usuario debe tener permisos de eliminación",
+    "Debe aparecer diálogo de confirmación",
+    "Post debe eliminarse de la base de datos",
+    "Lista debe actualizarse automáticamente",
+    "Número total de posts debe disminuir en 1"
   ]
 }
 ```
@@ -395,3 +711,39 @@ const TEST_DATA = {
 Este modelo de testing proporciona una base sólida para la automatización de pruebas del frontend Editorial Blog Platform utilizando Chrome-DevTools MCP. Los casos de prueba cubren los aspectos críticos de funcionalidad, rendimiento y experiencia de usuario, asegurando que la aplicación funcione correctamente en diferentes escenarios y dispositivos.
 
 La implementación de estos tests debe realizarse de manera incremental, comenzando con los flujos principales y expandiendo gradualmente hacia casos más específicos y edge cases.
+
+## Notas Adicionales
+
+- Todos los tests deben ejecutarse con el servidor backend corriendo en puerto 3001
+- El frontend debe estar servido desde puerto 3000
+- Verificar que la base de datos SQLite esté inicializada con datos de prueba
+- Los tests de performance deben ejecutarse en modo incógnito para evitar interferencias de extensiones
+
+## Notas Importantes sobre Autenticación
+
+### Prerequisitos de Autenticación
+- **CRÍTICO**: Todas las operaciones de creación, edición y eliminación de posts requieren autenticación previa
+- Los tests que involucren estas operaciones DEBEN ejecutar primero el caso de prueba `login_usuario_admin`
+- Verificar siempre el estado de autenticación antes de proceder con operaciones protegidas
+
+### Gestión de Sesiones en Testing
+- Las sesiones se mantienen durante la ejecución de los tests en el mismo navegador
+- Para tests de diferentes roles, cerrar sesión explícitamente antes de cambiar de usuario
+- Usar `evaluate_script` con `fetch('/api/auth/check')` para verificar estado de autenticación
+
+### Roles y Permisos en Testing
+- **Admin**: Puede crear, editar y eliminar cualquier post
+- **Editor**: Puede crear posts y editar sus propios posts
+- **Author**: Solo puede crear posts (sin edición posterior)
+
+### Manejo de Errores de Autenticación
+- Si un test falla por falta de autenticación, verificar:
+  1. Que el usuario esté logueado correctamente
+  2. Que el usuario tenga los permisos necesarios
+  3. Que la sesión no haya expirado
+  4. Que las cookies de sesión estén presentes
+
+### Limpieza de Datos de Prueba
+- Después de ejecutar tests de creación/edición, considerar limpiar los posts de prueba
+- Usar el endpoint `DELETE /api/posts/:id` con credenciales de admin para limpieza
+- Mantener un registro de los IDs de posts creados durante testing para facilitar la limpieza
