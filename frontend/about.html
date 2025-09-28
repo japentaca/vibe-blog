@@ -8,8 +8,8 @@
     <meta name="description" content="Conoce nuestra plataforma de blog minimalista diseñada para creadores reflexivos y contenido significativo.">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Suisse+Intl:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Canela:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
@@ -18,11 +18,13 @@
     
     <style>
         :root {
-            --charcoal: #2C2C2C;
+            --primary-blue: #0080EB;
+            --dark-text: #15171A;
             --warm-white: #FEFEFE;
-            --sage-green: #8B9A7A;
+            --white-grey: #F5F5F5;
+            --light-grey: #E0E0E0;
+            --mid-grey: #666666;
             --soft-gray: #F8F8F8;
-            --muted-gold: #D4B896;
             --cream: #FDFCF8;
         }
 
@@ -33,9 +35,9 @@
         }
 
         body {
-            font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
-            color: var(--charcoal);
+            color: var(--dark-text);
             background-color: var(--warm-white);
         }
 
@@ -45,11 +47,11 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(254, 254, 254, 0.95);
-            backdrop-filter: blur(10px);
+            background: var(--primary-blue);
             z-index: 1000;
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(139, 154, 122, 0.1);
+            height: 64px;
+            display: flex;
+            align-items: center;
         }
 
         .nav-container {
@@ -62,16 +64,19 @@
         }
 
         .logo {
-            font-family: 'Canela', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--charcoal);
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: opacity 0.3s ease;
         }
 
         .logo:hover {
-            color: var(--sage-green);
+            opacity: 0.8;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
         }
 
         .nav-links {
@@ -81,53 +86,25 @@
         }
 
         .nav-links a {
-            color: var(--charcoal);
+            color: var(--warm-white);
             text-decoration: none;
-            font-weight: 400;
-            transition: color 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: opacity 0.3s ease;
             position: relative;
         }
 
         .nav-links a:hover,
         .nav-links a.active {
-            color: var(--sage-green);
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--sage-green);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after,
-        .nav-links a.active::after {
-            width: 100%;
+            opacity: 0.8;
         }
 
         /* Hero Section */
         .hero {
-            padding: 8rem 2rem 4rem;
+            background: linear-gradient(135deg, var(--warm-white) 0%, var(--white-grey) 100%);
+            padding: 120px 0 80px;
             text-align: center;
-            background: linear-gradient(135deg, var(--cream) 0%, var(--warm-white) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('resources/hero-writing.jpg') center/cover;
-            opacity: 0.05;
-            z-index: 0;
         }
 
         .hero-content {
@@ -138,19 +115,20 @@
         }
 
         .hero h1 {
-            font-family: 'Canela', serif;
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 700;
-            color: var(--charcoal);
-            margin-bottom: 1.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 1rem;
             line-height: 1.2;
         }
 
         .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--sage-green);
-            margin-bottom: 2rem;
-            font-weight: 400;
+            font-family: 'Georgia', serif;
+            font-size: 1.2rem;
+            color: var(--mid-grey);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         /* Main Content */
@@ -165,45 +143,51 @@
         }
 
         .about-section h2 {
-            font-family: 'Canela', serif;
-            font-size: 2rem;
-            color: var(--charcoal);
-            margin-bottom: 1.5rem;
-            line-height: 1.3;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 2rem;
+            text-align: center;
         }
 
         .about-section h3 {
-            font-family: 'Canela', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 1.5rem;
-            color: var(--charcoal);
+            color: var(--dark-text);
             margin: 2rem 0 1rem;
             line-height: 1.4;
         }
 
         .about-section p {
+            font-family: 'Georgia', serif;
             margin-bottom: 1.5rem;
             font-size: 1.1rem;
             line-height: 1.8;
-            color: var(--charcoal);
-            opacity: 0.9;
+            color: var(--mid-grey);
         }
 
         .about-section ul {
-            margin: 1.5rem 0;
-            padding-left: 2rem;
+            list-style: none;
+            padding: 0;
         }
 
         .about-section li {
-            margin-bottom: 0.75rem;
-            font-size: 1.05rem;
+            font-family: 'Georgia', serif;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
             line-height: 1.7;
-            color: var(--charcoal);
-            opacity: 0.9;
+            color: var(--mid-grey);
+            padding-left: 1.5rem;
+            position: relative;
         }
 
-        .about-section li strong {
-            color: var(--sage-green);
-            font-weight: 600;
+        .about-section li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary-blue);
+            font-weight: bold;
         }
 
         /* Features Grid */
@@ -384,11 +368,13 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="logo">Editorial</a>
+            <a href="/" class="logo">
+                <img src="resources/logo-blog.svg" alt="Blog Logo">
+            </a>
             <ul class="nav-links">
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="about.html" class="active">Acerca de</a></li>
-                <li><a href="editor.html">Editor</a></li>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/about" class="active">Acerca de</a></li>
+                <li><a href="/editor">Editor</a></li>
             </ul>
         </div>
     </nav>
@@ -530,8 +516,8 @@
                 Editorial proporciona la plataforma perfecta para tu voz.
             </p>
             <div class="cta-buttons">
-                <a href="editor.html" class="btn btn-primary">📝 Comenzar a Escribir</a>
-                <a href="index.html" class="btn btn-secondary">📖 Leer Historias</a>
+                <a href="/editor" class="btn btn-primary">📝 Comenzar a Escribir</a>
+                <a href="/" class="btn btn-secondary">📖 Leer Historias</a>
             </div>
         </section>
     </main>

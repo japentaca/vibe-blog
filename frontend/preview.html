@@ -7,17 +7,19 @@
     <meta name="description" content="Previsualiza tu publicación de blog antes de publicarla.">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Suisse+Intl:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Canela:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --charcoal: #2C2C2C;
+            --primary-blue: #0080FF;
+            --dark-text: #15171A;
             --warm-white: #FEFEFE;
-            --sage-green: #8B9A7A;
-            --soft-gray: #F8F8F8;
-            --muted-gold: #D4B896;
-            --cream: #FDFCF8;
+            --white-grey: #F8F9FA;
+            --light-grey: #E1E5E9;
+            --mid-grey: #6C757D;
         }
 
         * {
@@ -27,9 +29,9 @@
         }
 
         body {
-            font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.7;
-            color: var(--charcoal);
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
             background-color: var(--warm-white);
         }
 
@@ -39,11 +41,12 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(254, 254, 254, 0.95);
-            backdrop-filter: blur(10px);
+            background: var(--primary-blue);
             z-index: 1000;
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(139, 154, 122, 0.1);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--light-grey);
         }
 
         .nav-container {
@@ -53,23 +56,33 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
         }
 
         .logo {
-            font-family: 'Canela', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--charcoal);
+            display: flex;
+            align-items: center;
             text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo:hover {
+            opacity: 0.8;
         }
 
         .preview-badge {
-            background: var(--sage-green);
-            color: var(--warm-white);
+            background: var(--warm-white);
+            color: var(--primary-blue);
             padding: 0.5rem 1rem;
-            border-radius: 25px;
+            border-radius: 20px;
             font-size: 0.9rem;
             font-weight: 500;
+            font-family: 'Montserrat', sans-serif;
         }
 
         /* Post Content */
@@ -126,29 +139,34 @@
         }
 
         .post-body {
+            font-family: 'Georgia', serif;
             font-size: 1.1rem;
             line-height: 1.8;
+            color: var(--mid-grey);
         }
 
         .post-body h1 {
-            font-family: 'Canela', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 2rem;
+            font-weight: 600;
             margin: 2rem 0 1rem;
-            color: var(--charcoal);
+            color: var(--dark-text);
         }
 
         .post-body h2 {
-            font-family: 'Canela', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 1.75rem;
+            font-weight: 600;
             margin: 1.5rem 0 0.75rem;
-            color: var(--charcoal);
+            color: var(--dark-text);
         }
 
         .post-body h3 {
-            font-family: 'Canela', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 1.5rem;
+            font-weight: 600;
             margin: 1.25rem 0 0.5rem;
-            color: var(--charcoal);
+            color: var(--dark-text);
         }
 
         .post-body p {
@@ -220,7 +238,9 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="logo">Editorial</a>
+            <a href="/" class="logo">
+                <img src="resources/logo-blog.svg" alt="Blog Logo">
+            </a>
             <div class="preview-badge">👁️ Modo Vista Previa</div>
         </div>
     </nav>
@@ -230,7 +250,7 @@
         <div class="empty-state" id="emptyState">
             <h3>Vista Previa No Disponible</h3>
             <p>Regresa al editor para crear y previsualizar tu publicación.</p>
-            <p><a href="editor.html" style="color: var(--sage-green); text-decoration: none;">← Volver al Editor</a></p>
+            <p><a href="/editor" style="color: var(--sage-green); text-decoration: none;">← Volver al Editor</a></p>
         </div>
     </main>
 

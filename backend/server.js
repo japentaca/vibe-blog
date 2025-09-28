@@ -103,6 +103,10 @@ app.get('/about', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/about.html'));
 });
 
+app.get('/post', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/post.html'));
+});
+
 // Error handling middleware (must be last)
 app.use(errorHandler);
 

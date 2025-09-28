@@ -7,8 +7,8 @@
     <meta name="description" content="Una plataforma de blog minimalista para escritura reflexiva y diseño hermoso. Descubre artículos sobre diseño, tecnología, escritura y creatividad.">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Suisse+Intl:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Canela:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
@@ -18,12 +18,14 @@
     
     <style>
         :root {
-            --charcoal: #2C2C2C;
-            --warm-white: #FEFEFE;
-            --sage-green: #8B9A7A;
-            --soft-gray: #F8F8F8;
-            --muted-gold: #D4B896;
-            --cream: #FDFCF8;
+            --primary-blue: #0080eb;
+            --dark-text: #15171a;
+            --mid-grey: #738a94;
+            --light-grey: #c5d2d9;
+            --white-grey: #e5eff5;
+            --warm-white: #ffffff;
+            --soft-gray: #f8f8f8;
+            --accent-blue: #26a6ed;
         }
 
         * {
@@ -33,9 +35,9 @@
         }
 
         body {
-            font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
-            color: var(--charcoal);
+            color: var(--dark-text);
             background-color: var(--warm-white);
             overflow-x: hidden;
         }
@@ -46,12 +48,13 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(254, 254, 254, 0.95);
-            backdrop-filter: blur(10px);
+            background: var(--primary-blue);
             z-index: 1000;
             padding: 1rem 0;
-            border-bottom: 1px solid rgba(139, 154, 122, 0.1);
             transition: all 0.3s ease;
+            height: 64px;
+            display: flex;
+            align-items: center;
         }
 
         .nav-container {
@@ -64,16 +67,19 @@
         }
 
         .logo {
-            font-family: 'Canela', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--charcoal);
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
         }
 
         .logo:hover {
-            color: var(--sage-green);
+            opacity: 0.8;
         }
 
         .nav-links {
@@ -83,51 +89,26 @@
         }
 
         .nav-links a {
-            color: var(--charcoal);
+            color: var(--warm-white);
             text-decoration: none;
-            font-weight: 400;
-            transition: color 0.3s ease;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
             position: relative;
+            font-size: 0.9rem;
         }
 
         .nav-links a:hover {
-            color: var(--sage-green);
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--sage-green);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
+            opacity: 0.8;
         }
 
         /* Hero Section */
         .hero {
             padding: 8rem 2rem 4rem;
             text-align: center;
-            background: linear-gradient(135deg, var(--cream) 0%, var(--warm-white) 100%);
+            background: linear-gradient(135deg, var(--white-grey) 0%, var(--warm-white) 100%);
             position: relative;
             overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('resources/hero-reading.jpg') center/cover;
-            opacity: 0.05;
-            z-index: 0;
+            margin-top: 64px;
         }
 
         .hero-content {
@@ -138,34 +119,34 @@
         }
 
         .hero h1 {
-            font-family: 'Canela', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 700;
-            color: var(--charcoal);
+            color: var(--dark-text);
             margin-bottom: 1.5rem;
             line-height: 1.2;
         }
 
         .hero-subtitle {
             font-size: 1.25rem;
-            color: var(--sage-green);
+            color: var(--primary-blue);
             margin-bottom: 2rem;
-            font-weight: 400;
+            font-weight: 500;
         }
 
         .hero-description {
             font-size: 1.1rem;
-            color: var(--charcoal);
-            opacity: 0.8;
+            color: var(--mid-grey);
             max-width: 600px;
             margin: 0 auto;
+            line-height: 1.6;
         }
 
         /* Search Section */
         .search-section {
             padding: 3rem 2rem;
             background: var(--soft-gray);
-            border-bottom: 1px solid rgba(139, 154, 122, 0.1);
+            border-bottom: 1px solid var(--light-grey);
         }
 
         .search-container {
@@ -181,17 +162,18 @@
             flex: 1;
             min-width: 300px;
             padding: 1rem 1.5rem;
-            border: 2px solid rgba(139, 154, 122, 0.2);
+            border: 2px solid var(--light-grey);
             border-radius: 50px;
             font-size: 1rem;
             background: var(--warm-white);
             transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
         }
 
         .search-input:focus {
             outline: none;
-            border-color: var(--sage-green);
-            box-shadow: 0 0 0 3px rgba(139, 154, 122, 0.1);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 128, 235, 0.1);
         }
 
         .category-filters {
@@ -202,10 +184,11 @@
 
         .filter-btn {
             padding: 0.5rem 1rem;
-            border: 2px solid var(--sage-green);
+            border: 2px solid var(--primary-blue);
             background: transparent;
-            color: var(--sage-green);
+            color: var(--primary-blue);
             border-radius: 25px;
+            font-family: 'Montserrat', sans-serif;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 0.9rem;
@@ -214,7 +197,7 @@
 
         .filter-btn:hover,
         .filter-btn.active {
-            background: var(--sage-green);
+            background: var(--primary-blue);
             color: var(--warm-white);
             transform: translateY(-2px);
         }
@@ -227,11 +210,12 @@
         }
 
         .section-title {
-            font-family: 'Canela', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 2rem;
-            color: var(--charcoal);
+            color: var(--dark-text);
             margin-bottom: 2rem;
             text-align: center;
+            font-weight: 600;
         }
 
         /* Blog Posts Grid */
@@ -246,14 +230,15 @@
             background: var(--warm-white);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(44, 44, 44, 0.08);
+            box-shadow: 0 4px 20px rgba(21, 23, 26, 0.08);
             transition: all 0.3s ease;
             cursor: pointer;
+            border: 1px solid var(--white-grey);
         }
 
         .post-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(44, 44, 44, 0.15);
+            box-shadow: 0 12px 40px rgba(0, 128, 235, 0.15);
         }
 
         .post-image {
@@ -273,28 +258,30 @@
 
         .post-category {
             display: inline-block;
-            background: var(--sage-green);
+            background: var(--primary-blue);
             color: var(--warm-white);
             padding: 0.25rem 0.75rem;
             border-radius: 15px;
             font-size: 0.8rem;
             font-weight: 500;
             margin-bottom: 1rem;
+            font-family: 'Montserrat', sans-serif;
         }
 
         .post-title {
-            font-family: 'Canela', serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 1.5rem;
-            color: var(--charcoal);
+            color: var(--dark-text);
             margin-bottom: 0.75rem;
             line-height: 1.3;
+            font-weight: 600;
         }
 
         .post-excerpt {
-            color: var(--charcoal);
-            opacity: 0.7;
+            color: var(--mid-grey);
             margin-bottom: 1rem;
             line-height: 1.6;
+            font-family: 'Georgia', serif;
         }
 
         .post-meta {
@@ -302,7 +289,8 @@
             justify-content: space-between;
             align-items: center;
             font-size: 0.9rem;
-            color: var(--sage-green);
+            color: var(--mid-grey);
+            font-family: 'Montserrat', sans-serif;
         }
 
         .post-date {
@@ -351,15 +339,17 @@
 
         /* Footer */
         .footer {
-            background: var(--charcoal);
+            background: var(--dark-text);
             color: var(--warm-white);
             text-align: center;
             padding: 2rem;
             margin-top: 4rem;
+            font-family: 'Montserrat', sans-serif;
         }
 
         .footer p {
             opacity: 0.8;
+            font-size: 0.9rem;
         }
 
         /* Responsive Design */
@@ -418,11 +408,13 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="logo">Editorial</a>
+            <a href="/" class="logo">
+                <img src="resources/logo-blog.svg" alt="Editorial Blog">
+            </a>
             <ul class="nav-links">
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="about.html">Acerca de</a></li>
-                <li><a href="editor.html">Editor</a></li>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/about">Acerca de</a></li>
+                <li><a href="/editor">Editor</a></li>
             </ul>
         </div>
     </nav>
@@ -604,7 +596,7 @@
         }
 
         function openPost(slug) {
-            window.location.href = `post.html?slug=${slug}`;
+            window.location.href = `/post?slug=${slug}`;
         }
 
         function formatDate(dateString) {
