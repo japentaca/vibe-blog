@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-Este documento sirve como guía para un agente de testing automatizado que utiliza el MCP de Chrome-DevTools para realizar pruebas exhaustivas del frontend de la plataforma Editorial Blog. El frontend está compuesto por 5 páginas principales con funcionalidades específicas y elementos interactivos que requieren validación.
+Este documento sirve como guía para un agente de testing automatizado que utiliza el MCP de Chrome-DevTools para realizar pruebas de funcionalidad y seguridad del frontend de la plataforma Editorial Blog.
 
 **IMPORTANTE**: La funcionalidad de edición de posts requiere autenticación. Los usuarios deben iniciar sesión antes de poder crear, editar o eliminar publicaciones.
 
@@ -15,33 +15,35 @@ Este documento sirve como guía para un agente de testing automatizado que utili
 4. **about.html** - Página informativa
 5. **preview.html** - Vista previa de posts
 
-### Tecnologías Utilizadas
-- **CSS Framework**: Estilos personalizados con variables CSS
-- **JavaScript**: Vanilla JS con servicios modulares
-- **Editor**: Quill.js para edición rica de texto
-- **Animaciones**: Anime.js y Splitting.js
-- **Fuentes**: Suisse Intl y Canela (Google Fonts)
-
-## Sistema de Autenticación
+## Sistema de Autenticación y Seguridad
 
 ### Credenciales de Prueba
-Para probar las funcionalidades que requieren autenticación, es necesario crear usuarios de prueba utilizando el script del backend:
+Para probar las funcionalidades que requieren autenticación, utiliza las siguientes credenciales específicas para testing:
+
+#### Usuarios de Testing Disponibles
+- **test_admin** / **Adm1n$ecur3T3st!** (test_admin@testing.local) - Rol: admin
+- **test_editor** / **Ed1t0r$ecur3T3st!** (test_editor@testing.local) - Rol: editor  
+- **test_author** / **Auth0r$ecur3T3st!** (test_author@testing.local) - Rol: author
+
+#### Scripts de Gestión de Usuarios de Testing
 
 ```bash
 # Navegar al directorio del backend
 cd backend
 
-# Crear usuario administrador de prueba
-node scripts/createUser.js admin password123 admin@test.com admin
+# Crear usuarios de testing (si no existen)
+node scripts/createUser.js test_admin "Adm1n$ecur3T3st!" test_admin@testing.local admin
+node scripts/createUser.js test_editor "Ed1t0r$ecur3T3st!" test_editor@testing.local editor
+node scripts/createUser.js test_author "Auth0r$ecur3T3st!" test_author@testing.local author
 
-# Crear usuario editor de prueba
-node scripts/createUser.js editor password123 editor@test.com editor
+# Listar usuarios de testing
+node scripts/deleteTestUsers.js list
 
-# Crear usuario autor de prueba
-node scripts/createUser.js autor password123 autor@test.com author
+# Eliminar todos los usuarios de testing (para limpiar entre pruebas)
+node scripts/deleteTestUsers.js all
 
-# Listar usuarios existentes
-node scripts/createUser.js list
+# Eliminar un usuario específico de testing
+node scripts/deleteTestUsers.js test_admin
 ```
 
 ### Roles y Permisos
@@ -101,7 +103,7 @@ Las siguientes rutas del backend requieren autenticación:
   "steps": [
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/login.html"
+      "url": "http://localhost:3000/login"
     },
     {
       "action": "take_snapshot",
@@ -110,13 +112,13 @@ Las siguientes rutas del backend requieren autenticación:
     {
       "action": "fill",
       "selector": "#usernameOrEmail",
-      "value": "admin",
+      "value": "test_admin",
       "description": "Ingresar nombre de usuario"
     },
     {
       "action": "fill",
       "selector": "#password",
-      "value": "password123",
+      "value": "Adm1n$ecur3T3st!",
       "description": "Ingresar contraseña"
     },
     {
@@ -152,7 +154,7 @@ Las siguientes rutas del backend requieren autenticación:
   "steps": [
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/editor.html"
+      "url": "http://localhost:3000/editor"
     },
     {
       "action": "evaluate_script",
@@ -181,7 +183,7 @@ Las siguientes rutas del backend requieren autenticación:
   "steps": [
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/index.html"
+      "url": "http://localhost:3000/"
     },
     {
       "action": "take_snapshot",
@@ -219,7 +221,7 @@ Las siguientes rutas del backend requieren autenticación:
   "steps": [
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/index.html"
+      "url": "http://localhost:3000/"
     },
     {
       "action": "fill",
@@ -259,7 +261,7 @@ Las siguientes rutas del backend requieren autenticación:
     },
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/editor.html"
+      "url": "http://localhost:3000/editor"
     },
     {
       "action": "take_snapshot",
@@ -320,7 +322,7 @@ Las siguientes rutas del backend requieren autenticación:
   "steps": [
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/editor.html"
+      "url": "http://localhost:3000/editor"
     },
     {
       "action": "fill",
@@ -352,7 +354,7 @@ Las siguientes rutas del backend requieren autenticación:
     },
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/index.html"
+      "url": "http://localhost:3000/"
     },
     {
       "action": "wait_for",
@@ -378,7 +380,7 @@ Las siguientes rutas del backend requieren autenticación:
   "steps": [
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/index.html"
+      "url": "http://localhost:3000/"
     },
     {
       "action": "click",
@@ -416,7 +418,7 @@ Las siguientes rutas del backend requieren autenticación:
     },
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/index.html"
+      "url": "http://localhost:3000/"
     },
     {
       "action": "wait_for",
@@ -443,7 +445,7 @@ Las siguientes rutas del backend requieren autenticación:
   "steps": [
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/index.html"
+      "url": "http://localhost:3000/"
     },
     {
       "action": "evaluate_script",
@@ -481,75 +483,108 @@ Las siguientes rutas del backend requieren autenticación:
 }
 ```
 
-### 4. Pruebas de Responsividad
+### 4. Pruebas de Seguridad
 
 ```javascript
-// Caso de prueba: Diseño responsivo
+// Caso de prueba: Validación de autenticación
 {
-  "test_name": "responsividad_mobile",
+  "test_name": "validacion_autenticacion",
+  "description": "Verificar que las rutas protegidas requieren autenticación",
   "steps": [
     {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/index.html"
+      "url": "http://localhost:3000/editor"
     },
     {
-      "action": "resize_page",
-      "width": 375,
-      "height": 667,
-      "description": "Simular dispositivo móvil"
+      "action": "evaluate_script",
+      "function": "() => { return fetch('/api/auth/check').then(r => r.json()); }",
+      "description": "Verificar estado de autenticación"
     },
     {
-      "action": "take_screenshot",
-      "description": "Capturar vista móvil"
-    },
-    {
-      "action": "resize_page",
-      "width": 1920,
-      "height": 1080,
-      "description": "Volver a vista desktop"
-    },
-    {
-      "action": "take_screenshot",
-      "description": "Capturar vista desktop"
+      "action": "take_snapshot",
+      "description": "Capturar estado sin autenticación"
     }
   ],
   "expected_results": [
-    "Navegación debe adaptarse a móvil",
-    "Grid de posts debe reorganizarse",
-    "Texto debe mantenerse legible"
+    "Usuario no autenticado debe ser redirigido al login",
+    "API debe retornar estado no autenticado",
+    "Editor no debe ser accesible sin login"
   ]
 }
 ```
 
-### 5. Pruebas de Performance
-
 ```javascript
-// Caso de prueba: Análisis de rendimiento
+// Caso de prueba: Validación de permisos por rol
 {
-  "test_name": "performance_carga_inicial",
+  "test_name": "validacion_permisos_rol",
+  "description": "Verificar que los permisos se respetan según el rol del usuario",
+  "prerequisites": ["login_usuario_author"],
   "steps": [
     {
-      "action": "performance_start_trace",
-      "reload": true,
-      "autoStop": true
-    },
-    {
       "action": "navigate_page",
-      "url": "http://localhost:3000/frontend/index.html"
+      "url": "http://localhost:3000/"
     },
     {
-      "action": "wait_for",
-      "text": "Editorial Blog",
-      "description": "Esperar carga completa"
+      "action": "evaluate_script",
+      "function": "() => { return document.querySelectorAll('.btn-delete').length; }",
+      "description": "Verificar botones de eliminación visibles para author"
     },
     {
-      "action": "performance_stop_trace"
+      "action": "click",
+      "selector": ".post-item:first-child .btn-edit",
+      "description": "Intentar editar post de otro usuario"
     }
   ],
   "expected_results": [
-    "LCP debe ser menor a 2.5 segundos",
-    "FID debe ser menor a 100ms",
-    "CLS debe ser menor a 0.1"
+    "Author no debe ver botones de eliminación en posts ajenos",
+    "Author no debe poder editar posts de otros usuarios",
+    "Debe aparecer mensaje de permisos insuficientes"
+  ]
+}
+```
+
+```javascript
+// Caso de prueba: Prevención de XSS
+{
+  "test_name": "prevencion_xss",
+  "description": "Verificar que el contenido malicioso es sanitizado",
+  "prerequisites": ["login_usuario_admin"],
+  "steps": [
+    {
+      "action": "navigate_page",
+      "url": "http://localhost:3000/editor"
+    },
+    {
+      "action": "fill",
+      "selector": "#post-title",
+      "value": "<script>alert('XSS')</script>Título de Prueba"
+    },
+    {
+      "action": "click",
+      "selector": ".ql-editor"
+    },
+    {
+      "action": "evaluate_script",
+      "function": "() => { window.quill.setText('<script>alert(\"XSS\")</script>Contenido malicioso'); }"
+    },
+    {
+      "action": "click",
+      "selector": ".btn-save"
+    },
+    {
+      "action": "navigate_page",
+      "url": "http://localhost:3000/"
+    },
+    {
+      "action": "evaluate_script",
+      "function": "() => { return document.querySelector('.post-title').innerHTML; }",
+      "description": "Verificar que el script fue sanitizado"
+    }
+  ],
+  "expected_results": [
+    "Scripts maliciosos deben ser sanitizados",
+    "Contenido debe mostrarse como texto plano",
+    "No debe ejecutarse código JavaScript inyectado"
   ]
 }
 ```
@@ -610,14 +645,9 @@ Las siguientes rutas del backend requieren autenticación:
 ### Variables de Entorno
 ```javascript
 const TEST_CONFIG = {
-  BASE_URL: "http://localhost:3000/frontend",
+  BASE_URL: "http://localhost:3000",
   TIMEOUT: 5000,
-  SCREENSHOT_PATH: "./screenshots",
-  VIEWPORT_SIZES: [
-    { width: 1920, height: 1080 }, // Desktop
-    { width: 1024, height: 768 },  // Tablet
-    { width: 375, height: 667 }    // Mobile
-  ]
+  SCREENSHOT_PATH: "./screenshots"
 };
 ```
 
@@ -630,29 +660,23 @@ const TEST_DATA = {
     category: "Tecnología"
   },
   SEARCH_TERMS: ["tecnología", "diseño", "escritura"],
-  INVALID_INPUTS: ["", "   ", "<script>alert('xss')</script>"]
+  MALICIOUS_INPUTS: ["<script>alert('xss')</script>", "javascript:alert('xss')", "onload=alert('xss')"]
 };
 ```
 
 ## Validaciones Específicas
 
-### 1. Validaciones Visuales
-- Verificar que las fuentes se cargan correctamente
-- Confirmar que los colores coinciden con la paleta definida
-- Validar que las animaciones se ejecutan suavemente
-- Comprobar que las imágenes se cargan sin errores
-
-### 2. Validaciones Funcionales
+### 1. Validaciones Funcionales
 - Confirmar que la búsqueda filtra correctamente
 - Verificar que el editor guarda el contenido
 - Validar que la navegación funciona en todas las páginas
 - Comprobar que los formularios manejan errores apropiadamente
 
-### 3. Validaciones de Accesibilidad
-- Verificar que todos los elementos tienen etiquetas apropiadas
-- Confirmar que la navegación por teclado funciona
-- Validar contraste de colores
-- Comprobar que las imágenes tienen texto alternativo
+### 2. Validaciones de Seguridad
+- Verificar autenticación en rutas protegidas
+- Validar permisos según roles de usuario
+- Comprobar sanitización de contenido malicioso
+- Confirmar que las sesiones expiran correctamente
 
 ## Manejo de Errores
 
@@ -695,22 +719,16 @@ const TEST_DATA = {
       "status": "passed|failed|skipped",
       "duration": "XX ms",
       "screenshots": ["path/to/screenshot.png"],
-      "errors": ["error message if any"]
+      "errors": ["error message if any"],
+      "security_issues": ["security issue if any"]
     }
-  ],
-  "performance_metrics": {
-    "lcp": "X.X segundos",
-    "fid": "XX ms",
-    "cls": "X.XX"
-  }
+  ]
 }
 ```
 
 ## Conclusiones
 
-Este modelo de testing proporciona una base sólida para la automatización de pruebas del frontend Editorial Blog Platform utilizando Chrome-DevTools MCP. Los casos de prueba cubren los aspectos críticos de funcionalidad, rendimiento y experiencia de usuario, asegurando que la aplicación funcione correctamente en diferentes escenarios y dispositivos.
-
-La implementación de estos tests debe realizarse de manera incremental, comenzando con los flujos principales y expandiendo gradualmente hacia casos más específicos y edge cases.
+Este modelo de testing proporciona una base sólida para la automatización de pruebas de funcionalidad y seguridad del frontend Editorial Blog Platform utilizando Chrome-DevTools MCP. Los casos de prueba cubren los aspectos críticos de autenticación, autorización, prevención de vulnerabilidades y funcionalidad básica, asegurando que la aplicación sea segura y funcional.
 
 ## Notas Adicionales
 
